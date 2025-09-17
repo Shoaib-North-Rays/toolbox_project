@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversion Result - Toolbox{% endblock %}
+
+{% block description %}File conversion completed. Download your converted file.{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Conversion Result
+        </h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        {% if conversion.status == 'completed' %}
+            <!-- Success State -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Conversion Successful!</h2>
+                <p class="text-gray-600 mb-6">Your file has been converted successfully.</p>
+                
+                <!-- File Details -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                    <h3 class="font-semibold text-gray-900 mb-3">Conversion Details</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Original File:</span>
+                            <span class="font-medium">{{ conversion.original_filename }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Converted File:</span>
+                            <span class="font-medium">{{ conversion.converted_filename }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Conversion Type:</span>
+                            <span class="font-medium">{{ conversion.get_conversion_type_display }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Completed:</span>
+                            <span class="font-medium">{{ conversion.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Download Button -->
+                <a href="{% url 'tool_app:download_file' pk=conversion.pk %}" 
+                   class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download Converted File
+                </a>
+            </div>
+
+        {% elif conversion.status == 'processing' %}
+            <!-- Processing State -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                    <svg class="w-10 h-10 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Converting Your File...</h2>
+                <p class="text-gray-600 mb-6">Please wait while we process your file. This usually takes just a few seconds.</p>
+                
+                <!-- Auto refresh script will be added in extra_js -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-600">This page will automatically refresh when conversion is complete.</p>
+                </div>
+            </div>
+
+        {% elif conversion.status == 'failed' %}
+            <!-- Error State -->
+            <div class="text-center">
+                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Conversion Failed</h2>
+                <p class="text-gray-600 mb-6">We encountered an error while converting your file.</p>
+                
+                {% if conversion.error_message %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
+                        <h3 class="font-semibold text-red-900 mb-2">Error Details:</h3>
+                        <p class="text-sm text-red-700">{{ conversion.error_message }}</p>
+                    </div>
+                {% endif %}
+                
+                <a href="{% url 'tool_app:file_converter' %}" 
+                   class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Try Again
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Additional Actions -->
+    <div class="mt-8 text-center">
+        <div class="inline-flex items-center space-x-4">
+            <a href="{% url 'tool_app:home' %}" 
+               class="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                ← Back to Home
+            </a>
+            <span class="text-gray-400">|</span>
+            <a href="{% url 'tool_app:file_converter' %}" 
+               class="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                Convert Another File
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if conversion.status == 'processing' %}
+    {% block extra_js %}
+    <script>
+        // Auto-refresh for processing status
+        setTimeout(function() {
+            location.reload();
+        }, 3000); // Refresh every 3 seconds
+    </script>
+    {% endblock %}
+{% endif %}
+{% endblock %}

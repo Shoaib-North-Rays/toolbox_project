@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}File Converter - Toolbox{% endblock %}
+
+{% block description %}Convert between different file formats including PDF, DOC, TXT and more. Fast and secure file conversion online.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            📁 File Converter
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Convert your files between different formats quickly and securely. 
+            Supported formats: TXT, PDF, DOC, DOCX
+        </p>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- File Upload -->
+            <div>
+                <label for="{{ form.original_file.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.original_file.label }}
+                </label>
+                {{ form.original_file }}
+                {% if form.original_file.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ form.original_file.help_text }}</p>
+                {% endif %}
+                {% if form.original_file.errors %}
+                    <div class="mt-1 text-sm text-red-600">
+                        {% for error in form.original_file.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Conversion Type -->
+            <div>
+                <label for="{{ form.conversion_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ form.conversion_type.label }}
+                </label>
+                {{ form.conversion_type }}
+                {% if form.conversion_type.errors %}
+                    <div class="mt-1 text-sm text-red-600">
+                        {% for error in form.conversion_type.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        Convert File
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Features -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg p-6 shadow-md text-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">Fast Conversion</h3>
+            <p class="text-sm text-gray-600">Quick processing of your files</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-md text-center">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">Secure</h3>
+            <p class="text-sm text-gray-600">Your files are processed securely</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-md text-center">
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">Mobile Friendly</h3>
+            <p class="text-sm text-gray-600">Works on all devices</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-md text-center">
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">Free to Use</h3>
+            <p class="text-sm text-gray-600">No hidden costs or fees</p>
+        </div>
+    </div>
+
+    <!-- Supported Formats -->
+    <div class="bg-gray-50 rounded-xl p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Supported Conversions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                    Text Files (TXT)
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• TXT → PDF</li>
+                    <li>• Easy text formatting</li>
+                    <li>• Preserve line breaks</li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                    PDF Files
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• PDF → TXT</li>
+                    <li>• PDF → DOC</li>
+                    <li>• Extract text content</li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-blue-700 rounded-full mr-2"></span>
+                    Word Documents
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• DOC/DOCX → PDF</li>
+                    <li>• Preserve formatting</li>
+                    <li>• Handle images and tables</li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    More Coming Soon
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• PowerPoint files</li>
+                    <li>• Excel spreadsheets</li>
+                    <li>• Image formats</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // File upload preview
+    document.getElementById('{{ form.original_file.id_for_label }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // You could add file preview functionality here
+            console.log('File selected:', file.name);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}
