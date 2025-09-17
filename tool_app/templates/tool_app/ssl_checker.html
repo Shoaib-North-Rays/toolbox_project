@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}SSL Checker - Toolbox{% endblock %}
+
+{% block description %}Check SSL certificate information, expiry dates, and security details for any domain. SSL certificate analysis tool.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🔒 SSL Checker
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Check SSL certificate information, expiry dates, and security details for any domain or website.
+            </p>
+        </div>
+
+        <!-- SSL Checker Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Domain Input -->
+                    <div>
+                        <label for="{{ form.domain.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.domain.label }}
+                        </label>
+                        {{ form.domain }}
+                        {% if form.domain.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.domain.help_text }}</p>
+                        {% endif %}
+                        {% if form.domain.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.domain.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Port Input -->
+                    <div>
+                        <label for="{{ form.port.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.port.label }}
+                        </label>
+                        {{ form.port }}
+                        {% if form.port.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.port.help_text }}</p>
+                        {% endif %}
+                        {% if form.port.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.port.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        🔒 Check SSL Certificate
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if ssl_info %}
+        <div class="space-y-6">
+            {% if ssl_info.error %}
+                <!-- Error Message -->
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                    <h2 class="text-2xl font-bold text-red-900 mb-4">❌ SSL Check Failed</h2>
+                    <div class="text-red-800">
+                        <p><strong>Error:</strong> {{ ssl_info.error }}</p>
+                        <p class="mt-2"><strong>Domain:</strong> {{ ssl_info.domain }}:{{ ssl_info.port }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Certificate Status -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">📋 Certificate Status</h2>
+                        <div class="flex items-center space-x-2">
+                            {% if ssl_info.is_valid %}
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">✅ Valid</span>
+                            {% elif ssl_info.is_expired %}
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">❌ Expired</span>
+                            {% else %}
+                                <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">⚠️ Invalid</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Domain & Port</h3>
+                            <p class="text-gray-600">{{ ssl_info.domain }}:{{ ssl_info.port }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Days Until Expiry</h3>
+                            <p class="text-gray-600 {% if ssl_info.days_until_expiry < 30 %}text-red-600{% elif ssl_info.days_until_expiry < 90 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                                {{ ssl_info.days_until_expiry }} days
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificate Details -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🔐 Certificate Details</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Subject Information -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Subject Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for key, value in ssl_info.subject.items %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">{{ key }}:</span>
+                                    <span class="text-gray-800">{{ value }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Issuer Information -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Issuer Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for key, value in ssl_info.issuer.items %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">{{ key }}:</span>
+                                    <span class="text-gray-800">{{ value }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Validity Period -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Validity Period</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">Valid From:</span>
+                                    <span class="text-gray-800">{{ ssl_info.not_before }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">Valid Until:</span>
+                                    <span class="text-gray-800">{{ ssl_info.not_after }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Details -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Technical Details</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">Version:</span>
+                                    <span class="text-gray-800">{{ ssl_info.version }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 font-medium">Serial Number:</span>
+                                    <span class="text-gray-800 font-mono text-xs">{{ ssl_info.serial_number }}</span>
+                                </div>
+                                <div class="flex justify-between md:col-span-2">
+                                    <span class="text-gray-600 font-medium">Signature Algorithm:</span>
+                                    <span class="text-gray-800">{{ ssl_info.signature_algorithm }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Alternative Names -->
+                        {% if ssl_info.san_list %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Subject Alternative Names (SAN)</h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for san in ssl_info.san_list %}
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{{ san }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">ℹ️ About SSL Certificates</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>SSL/TLS:</strong> Protocols that provide secure communication over networks</p>
+                <p><strong>Certificate:</strong> Digital document that authenticates a website's identity</p>
+                <p><strong>Expiry Check:</strong> Certificates must be renewed before expiration to maintain security</p>
+                <p><strong>SAN:</strong> Subject Alternative Names allow one certificate to secure multiple domains</p>
+                <p><strong>Best Practice:</strong> Renew certificates at least 30 days before expiration</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

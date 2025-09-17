@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}Email Validator - Toolbox{% endblock %}
+
+{% block description %}Validate email addresses format and check MX records. Bulk email validation tool for checking email validity.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                📧 Email Validator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Validate email addresses for correct format and check MX records to verify domain mail capabilities.
+            </p>
+        </div>
+
+        <!-- Email Validator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Email List Input -->
+                <div>
+                    <label for="{{ form.email_list.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.email_list.label }}
+                    </label>
+                    {{ form.email_list }}
+                    {% if form.email_list.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.email_list.help_text }}</p>
+                    {% endif %}
+                    {% if form.email_list.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.email_list.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- MX Check Option -->
+                <div class="flex items-center">
+                    {{ form.check_mx }}
+                    <label for="{{ form.check_mx.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                        {{ form.check_mx.label }}
+                    </label>
+                    {% if form.check_mx.help_text %}
+                        <p class="ml-2 text-sm text-gray-500">{{ form.check_mx.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        📧 Validate Emails
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if validation_results %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Validation Results</h2>
+            
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {% with total=validation_results|length %}
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ total }}</div>
+                    <div class="text-sm text-blue-800">Total Checked</div>
+                </div>
+                {% endwith %}
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600" id="valid-format-count">0</div>
+                    <div class="text-sm text-green-800">Valid Format</div>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-purple-600" id="mx-valid-count">0</div>
+                    <div class="text-sm text-purple-800">Valid MX Records</div>
+                </div>
+            </div>
+
+            <!-- Individual Results -->
+            <div class="space-y-4">
+                {% for result in validation_results %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="font-mono text-sm text-gray-800">{{ result.email }}</div>
+                        <div class="flex items-center space-x-2">
+                            {% if result.is_valid_format %}
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">✅ Valid Format</span>
+                            {% else %}
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">❌ Invalid Format</span>
+                            {% endif %}
+                            
+                            {% if result.mx_valid is not none %}
+                                {% if result.mx_valid %}
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">📬 MX Valid</span>
+                                {% else %}
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">📭 No MX</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- MX Records -->
+                    {% if result.mx_records %}
+                    <div class="mt-2">
+                        <h4 class="text-sm font-medium text-gray-700 mb-1">MX Records:</h4>
+                        <div class="space-y-1">
+                            {% for mx in result.mx_records %}
+                            <div class="bg-gray-50 rounded px-2 py-1">
+                                <code class="text-xs text-gray-600">{{ mx }}</code>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Errors -->
+                    {% if result.errors %}
+                    <div class="mt-2">
+                        <h4 class="text-sm font-medium text-red-700 mb-1">Issues:</h4>
+                        <div class="space-y-1">
+                            {% for error in result.errors %}
+                            <div class="text-xs text-red-600">• {{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Export Options -->
+            <div class="mt-6 text-center space-x-4">
+                <button onclick="exportResults('valid')" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    💾 Export Valid Emails
+                </button>
+                <button onclick="exportResults('invalid')" 
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    💾 Export Invalid Emails
+                </button>
+                <button onclick="exportResults('all')" 
+                        class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    💾 Export Full Report
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">ℹ️ About Email Validation</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>Format Check:</strong> Validates email syntax according to RFC standards</p>
+                <p><strong>MX Records:</strong> Checks if the domain has mail exchange servers configured</p>
+                <p><strong>Domain Validation:</strong> Verifies that the domain exists and can receive emails</p>
+                <p><strong>Bulk Processing:</strong> Validate multiple email addresses at once</p>
+                <p><strong>Note:</strong> MX record validation doesn't guarantee deliverability, just that the domain can receive mail</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calculate and display statistics
+document.addEventListener('DOMContentLoaded', function() {
+    const results = {{ validation_results_json|safe }};
+    if (results && results.length > 0) {
+        let validFormatCount = 0;
+        let mxValidCount = 0;
+        
+        results.forEach(result => {
+            if (result.is_valid_format) {
+                validFormatCount++;
+            }
+            if (result.mx_valid === true) {
+                mxValidCount++;
+            }
+        });
+        
+        document.getElementById('valid-format-count').textContent = validFormatCount;
+        document.getElementById('mx-valid-count').textContent = mxValidCount;
+    }
+});
+
+function exportResults(type) {
+    const results = {{ validation_results_json|safe }};
+    let emailsToExport = [];
+    let content = '';
+    
+    results.forEach(result => {
+        if (type === 'valid' && result.is_valid_format && (result.mx_valid === null || result.mx_valid)) {
+            emailsToExport.push(result.email);
+        } else if (type === 'invalid' && (!result.is_valid_format || result.mx_valid === false)) {
+            emailsToExport.push(result.email);
+        } else if (type === 'all') {
+            const status = result.is_valid_format ? 'Valid Format' : 'Invalid Format';
+            const mx = result.mx_valid === null ? 'Not Checked' : (result.mx_valid ? 'MX Valid' : 'No MX');
+            const errors = result.errors.length > 0 ? ' - ' + result.errors.join(', ') : '';
+            content += `${result.email},${status},${mx}${errors}\n`;
+        }
+    });
+    
+    if (type !== 'all') {
+        content = emailsToExport.join('\n');
+    } else {
+        content = 'Email,Format Status,MX Status,Errors\n' + content;
+    }
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `email-validation-${type}.${type === 'all' ? 'csv' : 'txt'}`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+</script>
+{% endblock %}

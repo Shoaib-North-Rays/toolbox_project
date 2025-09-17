@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block title %}Audio Format Converter | ToolBox{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-music me-3"></i>Audio Format Converter
+                </h1>
+                <p class="lead text-muted">Convert your audio files between different formats with customizable quality settings</p>
+            </div>
+
+            <!-- Conversion Form -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload me-2"></i>Upload & Convert Audio
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="audioConverterForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.audio_file.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-file-audio me-2"></i>Select Audio File
+                                </label>
+                                {{ form.audio_file }}
+                                <div class="form-text">
+                                    Supported formats: MP3, WAV, M4A, OGG, FLAC, AAC (max 100MB)
+                                </div>
+                                {% if form.audio_file.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.audio_file.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.target_format.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-exchange-alt me-2"></i>Target Format
+                                </label>
+                                {{ form.target_format }}
+                                {% if form.target_format.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.target_format.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.quality.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-sliders-h me-2"></i>Audio Quality (kbps)
+                                </label>
+                                {{ form.quality }}
+                                <div class="form-text">Higher values = better quality & larger file size</div>
+                                {% if form.quality.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.quality.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-magic me-2"></i>Convert Audio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Conversion Results -->
+            {% if conversion_result %}
+                {% if conversion_result.success %}
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Conversion Complete
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Original File Info:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Format:</strong> {{ conversion_result.original_format }}</li>
+                                        <li><strong>Duration:</strong> {{ conversion_result.original_info.duration|floatformat:2 }}s</li>
+                                        <li><strong>Channels:</strong> {{ conversion_result.original_info.channels }}</li>
+                                        <li><strong>Sample Rate:</strong> {{ conversion_result.original_info.sample_rate }}Hz</li>
+                                        {% if conversion_result.original_info.bitrate != 'Unknown' %}
+                                            <li><strong>Bitrate:</strong> {{ conversion_result.original_info.bitrate }}kbps</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Converted File Info:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Format:</strong> {{ conversion_result.target_format }}</li>
+                                        <li><strong>Duration:</strong> {{ conversion_result.converted_info.duration|floatformat:2 }}s</li>
+                                        <li><strong>Channels:</strong> {{ conversion_result.converted_info.channels }}</li>
+                                        <li><strong>Sample Rate:</strong> {{ conversion_result.converted_info.sample_rate }}Hz</li>
+                                        <li><strong>Quality:</strong> {{ conversion_result.quality }}kbps</li>
+                                        <li><strong>File Size:</strong> {{ conversion_result.converted_info.size|filesizeformat }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="data:audio/{{ conversion_result.target_format|lower }};base64,{{ conversion_result.audio_data }}" 
+                                   download="{{ conversion_result.filename }}" 
+                                   class="btn btn-success btn-lg me-3">
+                                    <i class="fas fa-download me-2"></i>Download Converted Audio
+                                </a>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="fas fa-redo me-2"></i>Convert Another
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Conversion Failed
+                        </h5>
+                        <p class="mb-0">{{ conversion_result.error }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Features & Information -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-info-circle me-2"></i>Supported Formats
+                            </h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>MP3</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>WAV</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>M4A</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>OGG</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>FLAC</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>AAC</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-cogs me-2"></i>Quality Settings
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li><strong>96 kbps:</strong> Low quality, small file</li>
+                                <li><strong>128 kbps:</strong> Standard quality</li>
+                                <li><strong>192 kbps:</strong> High quality</li>
+                                <li><strong>256 kbps:</strong> Very high quality</li>
+                                <li><strong>320 kbps:</strong> Maximum quality</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Tips -->
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>Usage Tips
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Use WAV for lossless quality</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>MP3 is great for general use</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>FLAC for audiophile quality</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Higher bitrate = larger files</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>320kbps is near CD quality</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>128kbps sufficient for voice</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    document.getElementById('audioConverterForm').reset();
+    // Remove any existing results
+    window.location.href = window.location.pathname;
+}
+
+// File size display
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const size = (file.size / (1024 * 1024)).toFixed(2);
+                console.log(`File size: ${size}MB`);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

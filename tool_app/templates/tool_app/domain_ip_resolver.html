@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Domain to IP Resolver - Web Tools - Toolbox{% endblock %}
+{% block description %}Resolve domain names to IP addresses and lookup DNS records including A, AAAA, CNAME, MX, NS, and TXT records.{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Domain to IP Resolver</h1>
+            <p class="text-gray-600">Resolve domain names to IP addresses and lookup DNS records</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form.domain.label }}</label>
+                        {{ form.domain }}
+                        {% if form.domain.help_text %}<p class="text-sm text-gray-500 mt-1">{{ form.domain.help_text }}</p>{% endif %}
+                        {% if form.domain.errors %}<div class="text-red-500 text-sm mt-1">{{ form.domain.errors }}</div>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form.record_type.label }}</label>
+                        {{ form.record_type }}
+                        {% if form.record_type.errors %}<div class="text-red-500 text-sm mt-1">{{ form.record_type.errors }}</div>{% endif %}
+                    </div>
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Resolve Domain
+                    </button>
+                    <a href="{% url 'tool_app:home' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">Back to Home</a>
+                </div>
+            </form>
+        </div>
+        {% if dns_results %}
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">DNS Results</h2>
+            <div class="space-y-3">
+                {% for result in dns_results %}
+                <div class="bg-gray-50 rounded-lg p-4 border-l-4 {% if result.type == 'Error' %}border-red-500{% elif result.type == 'Info' %}border-blue-500{% else %}border-green-500{% endif %}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">{{ result.type }}</h3>
+                            <p class="text-gray-600 break-all">{{ result.value }}</p>
+                            {% if result.ttl %}<p class="text-sm text-gray-500 mt-1">TTL: {{ result.ttl }} seconds</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Whois Lookup - Web Tools - Toolbox{% endblock %}
+{% block description %}Lookup domain registration information including registrar, creation date, expiration date, and name servers.{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Whois Lookup</h1>
+            <p class="text-gray-600">Get domain registration and ownership information</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form.domain.label }}</label>
+                    {{ form.domain }}
+                    {% if form.domain.help_text %}<p class="text-sm text-gray-500 mt-1">{{ form.domain.help_text }}</p>{% endif %}
+                    {% if form.domain.errors %}<div class="text-red-500 text-sm mt-1">{{ form.domain.errors }}</div>{% endif %}
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Lookup Domain
+                    </button>
+                    <a href="{% url 'tool_app:home' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">Back to Home</a>
+                </div>
+            </form>
+        </div>
+        {% if whois_data %}
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            {% if whois_data.error %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-red-800">{{ whois_data.error }}</p>
+            </div>
+            {% else %}
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Domain Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div><span class="font-semibold text-gray-700">Domain:</span> <span class="text-gray-600">{{ whois_data.domain_name }}</span></div>
+                    {% if whois_data.registrar %}<div><span class="font-semibold text-gray-700">Registrar:</span> <span class="text-gray-600">{{ whois_data.registrar }}</span></div>{% endif %}
+                    {% if whois_data.creation_date %}<div><span class="font-semibold text-gray-700">Created:</span> <span class="text-gray-600">{{ whois_data.creation_date }}</span></div>{% endif %}
+                    {% if whois_data.expiration_date %}<div><span class="font-semibold text-gray-700">Expires:</span> <span class="text-gray-600">{{ whois_data.expiration_date }}</span></div>{% endif %}
+                    {% if whois_data.updated_date %}<div><span class="font-semibold text-gray-700">Updated:</span> <span class="text-gray-600">{{ whois_data.updated_date }}</span></div>{% endif %}
+                </div>
+                <div class="space-y-4">
+                    {% if whois_data.status %}<div><span class="font-semibold text-gray-700">Status:</span> 
+                        <div class="mt-1">
+                            {% for status in whois_data.status %}
+                            <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">{{ status }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>{% endif %}
+                    {% if whois_data.name_servers %}
+                    <div><span class="font-semibold text-gray-700">Name Servers:</span>
+                        <ul class="mt-1 text-gray-600 text-sm">
+                            {% for ns in whois_data.name_servers %}
+                            <li>{{ ns }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

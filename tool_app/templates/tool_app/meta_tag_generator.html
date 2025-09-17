@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Meta Tag Generator - SEO Helper - Toolbox{% endblock %}
+
+{% block description %}Generate SEO-optimized HTML meta tags for better search engine rankings. Includes Open Graph and Twitter Card tags.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Meta Tag Generator</h1>
+            <p class="text-gray-600">Generate SEO-optimized HTML meta tags for better search rankings</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Page Information</h2>
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.title.label }}
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.title.help_text }}</p>
+                        {% endif %}
+                        {% if form.title.errors %}
+                            <div class="text-red-500 text-sm mt-1">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.description.help_text }}</p>
+                        {% endif %}
+                        {% if form.description.errors %}
+                            <div class="text-red-500 text-sm mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.keywords.label }}
+                            </label>
+                            {{ form.keywords }}
+                            {% if form.keywords.help_text %}
+                                <p class="text-sm text-gray-500 mt-1">{{ form.keywords.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.author.label }}
+                            </label>
+                            {{ form.author }}
+                            {% if form.author.help_text %}
+                                <p class="text-sm text-gray-500 mt-1">{{ form.author.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.canonical_url.label }}
+                        </label>
+                        {{ form.canonical_url }}
+                        {% if form.canonical_url.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.canonical_url.help_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.og_image.label }}
+                        </label>
+                        {{ form.og_image }}
+                        {% if form.og_image.help_text %}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.og_image.help_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            Generate Meta Tags
+                        </button>
+                        <a href="{% url 'tool_app:home' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">
+                            Back to Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            {% if meta_tags %}
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Generated Meta Tags</h2>
+                    <button onclick="copyMetaTags()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copy HTML
+                    </button>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <pre id="meta-tags-output" class="text-sm text-gray-800 whitespace-pre-wrap overflow-x-auto"><code>{{ meta_tags }}</code></pre>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <p><strong>Instructions:</strong> Copy the HTML above and paste it into the &lt;head&gt; section of your webpage.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- SEO Tips -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">SEO Best Practices</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Title Tag Tips</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Keep titles 50-60 characters long</li>
+                        <li>• Include primary keywords naturally</li>
+                        <li>• Make each page title unique</li>
+                        <li>• Write for users, not just search engines</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Meta Description Tips</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Keep descriptions 150-160 characters</li>
+                        <li>• Include a call-to-action</li>
+                        <li>• Accurately describe page content</li>
+                        <li>• Use relevant keywords naturally</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Open Graph Benefits</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Better social media sharing</li>
+                        <li>• Control how content appears</li>
+                        <li>• Increase click-through rates</li>
+                        <li>• Professional appearance</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Technical Notes</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Canonical URLs prevent duplicate content</li>
+                        <li>• Keywords meta tag has minimal SEO impact</li>
+                        <li>• Viewport meta tag is crucial for mobile</li>
+                        <li>• Robots meta tag controls crawling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyMetaTags() {
+        const output = document.getElementById('meta-tags-output');
+        const textArea = document.createElement('textarea');
+        textArea.value = output.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        // Show feedback
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copied!';
+        button.classList.remove('bg-green-600', 'hover:bg-green-700');
+        button.classList.add('bg-green-800');
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.add('bg-green-600', 'hover:bg-green-700');
+            button.classList.remove('bg-green-800');
+        }, 2000);
+    }
+</script>
+{% endblock %}

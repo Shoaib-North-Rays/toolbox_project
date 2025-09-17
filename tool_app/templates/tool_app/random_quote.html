@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Random Quote Generator - Toolbox{% endblock %}
+
+{% block description %}Generate inspirational, motivational, funny, and wisdom quotes. Get random quotes for motivation and inspiration.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                💭 Random Quote Generator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Get inspired with random quotes from famous personalities. Perfect for motivation, social media, or daily inspiration!
+            </p>
+        </div>
+
+        <!-- Quote Generator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Category -->
+                    <div>
+                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.category.label }}
+                        </label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.category.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Count -->
+                    <div>
+                        <label for="{{ form.count.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.count.label }}
+                        </label>
+                        {{ form.count }}
+                        {% if form.count.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.count.help_text }}</p>
+                        {% endif %}
+                        {% if form.count.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.count.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        💭 Generate Quotes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if quotes_result %}
+        <div class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">🎯 Generated Quotes</h2>
+                <p class="text-gray-600">{{ quotes_result.count }} quote{{ quotes_result.count|pluralize }} from {{ quotes_result.category|title }} category</p>
+            </div>
+
+            {% for quote in quotes_result.quotes %}
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <blockquote class="text-lg text-gray-800 italic mb-4 leading-relaxed">
+                    "{{ quote.quote }}"
+                </blockquote>
+                <div class="flex items-center justify-between">
+                    <cite class="text-purple-600 font-semibold not-italic">— {{ quote.author }}</cite>
+                    <div class="flex space-x-2">
+                        <button onclick="copyQuote('{{ quote.quote|escapejs }}', '{{ quote.author|escapejs }}')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                        <button onclick="shareQuote('{{ quote.quote|escapejs }}', '{{ quote.author|escapejs }}')" 
+                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm transition-colors">
+                            📤 Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Generate More Button -->
+            <div class="text-center">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="category" value="{{ quotes_result.category }}">
+                    <input type="hidden" name="count" value="{{ quotes_result.count }}">
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        🔄 Generate More Quotes
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Categories Info -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">📚 Quote Categories</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div class="text-blue-800"><strong>Inspirational:</strong> Uplifting quotes to inspire</div>
+                <div class="text-blue-800"><strong>Motivational:</strong> Quotes to boost your drive</div>
+                <div class="text-blue-800"><strong>Funny:</strong> Humorous and witty quotes</div>
+                <div class="text-blue-800"><strong>Love:</strong> Quotes about love and relationships</div>
+                <div class="text-blue-800"><strong>Life:</strong> Quotes about life experiences</div>
+                <div class="text-blue-800"><strong>Success:</strong> Quotes about achieving goals</div>
+                <div class="text-blue-800"><strong>Wisdom:</strong> Deep philosophical quotes</div>
+                <div class="text-blue-800"><strong>All Categories:</strong> Mix of all quote types</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyQuote(quote, author) {
+    const fullQuote = `"${quote}" — ${author}`;
+    
+    navigator.clipboard.writeText(fullQuote).then(function() {
+        // Show success message temporarily
+        event.target.textContent = '✅ Copied!';
+        event.target.classList.add('bg-green-500', 'text-white');
+        event.target.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        
+        setTimeout(function() {
+            event.target.textContent = '📋 Copy';
+            event.target.classList.remove('bg-green-500', 'text-white');
+            event.target.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }, 2000);
+    });
+}
+
+function shareQuote(quote, author) {
+    const fullQuote = `"${quote}" — ${author}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Inspirational Quote',
+            text: fullQuote
+        });
+    } else {
+        // Fallback to copying
+        copyQuote(quote, author);
+    }
+}
+</script>
+{% endblock %}

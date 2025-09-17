@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Random Name Generator - Toolbox{% endblock %}
+
+{% block description %}Generate random names, usernames, and character names. Perfect for creative projects, gaming, and character creation.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🎭 Random Name Generator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Generate random names, usernames, and character names for your creative projects, games, or stories!
+            </p>
+        </div>
+
+        <!-- Name Generator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Name Type -->
+                    <div>
+                        <label for="{{ form.name_type.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.name_type.label }}
+                        </label>
+                        {{ form.name_type }}
+                        {% if form.name_type.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.name_type.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.gender.label }}
+                        </label>
+                        {{ form.gender }}
+                        {% if form.gender.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.gender.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Count -->
+                    <div>
+                        <label for="{{ form.count.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.count.label }}
+                        </label>
+                        {{ form.count }}
+                        {% if form.count.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.count.help_text }}</p>
+                        {% endif %}
+                        {% if form.count.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.count.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        🎭 Generate Names
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if names_result %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">🎉 Generated Names</h2>
+                <p class="text-gray-600">{{ names_result.count }} {{ names_result.name_type }} name{{ names_result.count|pluralize }} ({{ names_result.gender|title }})</p>
+            </div>
+
+            <!-- Names Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {% for name in names_result.names %}
+                <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-4 text-center">
+                    <span class="text-lg font-semibold text-gray-800">{{ name }}</span>
+                    <button onclick="copyName('{{ name }}')" 
+                            class="ml-2 text-orange-600 hover:text-orange-700 transition-colors">
+                        📋
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4">
+                <button onclick="copyAllNames()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    📋 Copy All Names
+                </button>
+                <button onclick="downloadNames()" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    💾 Download as Text
+                </button>
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="name_type" value="{{ names_result.name_type }}">
+                    <input type="hidden" name="gender" value="{{ names_result.gender }}">
+                    <input type="hidden" name="count" value="{{ names_result.count }}">
+                    <button type="submit" 
+                            class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        🔄 Generate More
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Usage Examples -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Perfect for:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-800">
+                <div><strong>🎮 Gaming:</strong> Character names for RPGs and online games</div>
+                <div><strong>📚 Writing:</strong> Character names for stories and novels</div>
+                <div><strong>🎭 Creative Projects:</strong> Names for fictional characters</div>
+                <div><strong>👤 Usernames:</strong> Unique usernames for social media</div>
+                <div><strong>🎪 Role Playing:</strong> Names for D&D characters</div>
+                <div><strong>🎨 Art Projects:</strong> Names for artwork characters</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const allNames = [{% for name in names_result.names %}'{{ name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+function copyName(name) {
+    navigator.clipboard.writeText(name).then(function() {
+        // Show success feedback
+        event.target.textContent = '✅';
+        setTimeout(function() {
+            event.target.textContent = '📋';
+        }, 1000);
+    });
+}
+
+function copyAllNames() {
+    {% if names_result %}
+    const namesList = allNames.join('\n');
+    navigator.clipboard.writeText(namesList).then(function() {
+        // Show success message
+        event.target.textContent = '✅ Copied All!';
+        event.target.classList.add('bg-green-600');
+        event.target.classList.remove('bg-blue-600');
+        
+        setTimeout(function() {
+            event.target.textContent = '📋 Copy All Names';
+            event.target.classList.remove('bg-green-600');
+            event.target.classList.add('bg-blue-600');
+        }, 2000);
+    });
+    {% endif %}
+}
+
+function downloadNames() {
+    {% if names_result %}
+    const namesList = allNames.join('\n');
+    const blob = new Blob([namesList], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'random-names.txt';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    {% endif %}
+}
+</script>
+{% endblock %}

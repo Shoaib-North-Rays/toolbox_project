@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}Audio Speed Changer | ToolBox{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-tachometer-alt me-3"></i>Audio Speed Changer
+                </h1>
+                <p class="lead text-muted">Speed up or slow down your audio files while optionally preserving pitch</p>
+            </div>
+
+            <!-- Processing Form -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload me-2"></i>Upload & Adjust Speed
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="speedChangerForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.audio_file.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-file-audio me-2"></i>Select Audio File
+                                </label>
+                                {{ form.audio_file }}
+                                <div class="form-text">
+                                    Supported formats: MP3, WAV, M4A, OGG, FLAC, AAC (max 100MB)
+                                </div>
+                                {% if form.audio_file.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.audio_file.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.speed_multiplier.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-fast-forward me-2"></i>Speed Multiplier
+                                </label>
+                                {{ form.speed_multiplier }}
+                                <div class="form-text">
+                                    1.0 = normal speed, 2.0 = double speed, 0.5 = half speed
+                                </div>
+                                {% if form.speed_multiplier.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.speed_multiplier.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.output_format.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-file-export me-2"></i>Output Format
+                                </label>
+                                {{ form.output_format }}
+                                {% if form.output_format.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.output_format.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check">
+                                    {{ form.preserve_pitch }}
+                                    <label class="form-check-label" for="{{ form.preserve_pitch.id_for_label }}">
+                                        <i class="fas fa-music me-2"></i>Preserve Pitch (recommended for music/voice)
+                                    </label>
+                                    <div class="form-text">
+                                        When enabled, the audio pitch stays the same despite speed changes
+                                    </div>
+                                </div>
+                                {% if form.preserve_pitch.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.preserve_pitch.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-magic me-2"></i>Change Speed
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Processing Results -->
+            {% if processing_result %}
+                {% if processing_result.success %}
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Speed Change Complete
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Processing Info:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Speed Multiplier:</strong> {{ processing_result.speed_multiplier }}x</li>
+                                        <li><strong>Pitch Preserved:</strong> 
+                                            {% if processing_result.preserve_pitch %}
+                                                <span class="text-success"><i class="fas fa-check"></i> Yes</span>
+                                            {% else %}
+                                                <span class="text-warning"><i class="fas fa-times"></i> No</span>
+                                            {% endif %}
+                                        </li>
+                                        <li><strong>Output Format:</strong> {{ processing_result.output_format }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Duration Change:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Original Duration:</strong> {{ processing_result.original_duration|floatformat:2 }}s</li>
+                                        <li><strong>New Duration:</strong> {{ processing_result.new_duration|floatformat:2 }}s</li>
+                                        <li><strong>Time Saved/Added:</strong> 
+                                            {% if processing_result.speed_multiplier > 1 %}
+                                                <span class="text-success">-{{ processing_result.original_duration|floatformat:2 }}s faster</span>
+                                            {% else %}
+                                                <span class="text-info">+{{ processing_result.new_duration|floatformat:2 }}s slower</span>
+                                            {% endif %}
+                                        </li>
+                                        <li><strong>File Size:</strong> {{ processing_result.size|filesizeformat }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="data:audio/{{ processing_result.output_format|lower }};base64,{{ processing_result.audio_data }}" 
+                                   download="{{ processing_result.filename }}" 
+                                   class="btn btn-success btn-lg me-3">
+                                    <i class="fas fa-download me-2"></i>Download Speed-Changed Audio
+                                </a>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="fas fa-redo me-2"></i>Process Another
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Processing Failed
+                        </h5>
+                        <p class="mb-0">{{ processing_result.error }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Features & Information -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-info-circle me-2"></i>Speed Examples
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li><strong>0.5x:</strong> Half speed (slower)</li>
+                                <li><strong>0.75x:</strong> 25% slower</li>
+                                <li><strong>1.0x:</strong> Normal speed</li>
+                                <li><strong>1.25x:</strong> 25% faster</li>
+                                <li><strong>1.5x:</strong> 50% faster</li>
+                                <li><strong>2.0x:</strong> Double speed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-cogs me-2"></i>Pitch Preservation
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i><strong>Enabled:</strong> Voice/music sounds natural</li>
+                                <li><i class="fas fa-times text-warning me-2"></i><strong>Disabled:</strong> Chipmunk/deep voice effect</li>
+                                <li><i class="fas fa-lightbulb text-info me-2"></i><strong>Tip:</strong> Use for podcasts, audiobooks</li>
+                                <li><i class="fas fa-lightbulb text-info me-2"></i><strong>Creative:</strong> Disable for special effects</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Use Cases -->
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>Common Use Cases
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Learning & Study</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Speed up lectures</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Slow down for comprehension</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Language learning</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Content Creation</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Podcast editing</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Voice effects</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Music remixing</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Accessibility</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Hearing impairments</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Processing difficulties</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Time constraints</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    document.getElementById('speedChangerForm').reset();
+    // Remove any existing results
+    window.location.href = window.location.pathname;
+}
+
+// Speed multiplier visual feedback
+document.addEventListener('DOMContentLoaded', function() {
+    const speedInput = document.querySelector('input[name="speed_multiplier"]');
+    if (speedInput) {
+        speedInput.addEventListener('input', function(e) {
+            const value = parseFloat(e.target.value);
+            let feedback = '';
+            
+            if (value < 0.5) feedback = 'Very slow';
+            else if (value < 1.0) feedback = 'Slower than normal';
+            else if (value === 1.0) feedback = 'Normal speed';
+            else if (value < 2.0) feedback = 'Faster than normal';
+            else feedback = 'Very fast';
+            
+            // You could add visual feedback here
+            console.log(`Speed: ${value}x (${feedback})`);
+        });
+    }
+});
+</script>
+{% endblock %}

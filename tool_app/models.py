@@ -15,6 +15,20 @@ class FileConversion(models.Model):
         ('pdf_to_txt', 'PDF to Text'),
         ('doc_to_pdf', 'DOC to PDF'),
         ('pdf_to_doc', 'PDF to DOC'),
+        ('image_compress', 'Image Compression'),
+        ('image_convert', 'Image Format Conversion'),
+        ('qr_generate', 'QR Code Generation'),
+        ('meta_tag_generator', 'Meta Tag Generator'),
+        ('url_encoder', 'URL Encoder'),
+        ('url_decoder', 'URL Decoder'),
+        ('domain_ip_resolver', 'Domain to IP Resolver'),
+        ('whois_lookup', 'Whois Lookup'),
+        ('robots_sitemap_generator', 'Robots.txt & Sitemap Generator'),
+        ('hash_generator', 'Hash Generator'),
+        ('jwt_decoder', 'JWT Decoder'),
+        ('ssl_checker', 'SSL Certificate Checker'),
+        ('email_validator', 'Email Validator'),
+        ('text_encryption', 'Text Encryption/Decryption'),
     ]
     
     STATUS_CHOICES = [
@@ -26,7 +40,7 @@ class FileConversion(models.Model):
     
     original_file = models.FileField(upload_to=upload_to_files)
     converted_file = models.FileField(upload_to=upload_to_files, blank=True, null=True)
-    conversion_type = models.CharField(max_length=20, choices=CONVERSION_TYPES)
+    conversion_type = models.CharField(max_length=30, choices=CONVERSION_TYPES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

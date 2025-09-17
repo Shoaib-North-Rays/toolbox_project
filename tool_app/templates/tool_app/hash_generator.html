@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Hash Generator - Toolbox{% endblock %}
+
+{% block description %}Generate MD5, SHA1, SHA256, SHA512, and other hash values for text input. Secure hash generation tool.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🔐 Hash Generator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Generate secure hash values using various algorithms including MD5, SHA1, SHA256, SHA512, and more.
+            </p>
+        </div>
+
+        <!-- Hash Generator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Text Input -->
+                <div>
+                    <label for="{{ form.text_input.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.text_input.label }}
+                    </label>
+                    {{ form.text_input }}
+                    {% if form.text_input.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.text_input.help_text }}</p>
+                    {% endif %}
+                    {% if form.text_input.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.text_input.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Hash Types -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        {{ form.hash_types.label }}
+                    </label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for choice in form.hash_types %}
+                            <div class="flex items-center">
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}" class="ml-2 text-sm text-gray-700">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.hash_types.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.hash_types.help_text }}</p>
+                    {% endif %}
+                    {% if form.hash_types.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.hash_types.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        🔐 Generate Hashes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if hash_results %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Generated Hashes</h2>
+            <div class="space-y-4">
+                {% for algorithm, hash_value in hash_results.items %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">{{ algorithm }}</h3>
+                        <button onclick="copyToClipboard('{{ algorithm|lower }}_hash')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 font-mono text-sm break-all" id="{{ algorithm|lower }}_hash">
+                        {{ hash_value }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Download Option -->
+            <div class="mt-6 text-center">
+                <button onclick="downloadHashes()" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                    💾 Download as Text File
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">ℹ️ About Hash Functions</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>MD5:</strong> 128-bit hash function, fast but not cryptographically secure</p>
+                <p><strong>SHA1:</strong> 160-bit hash function, deprecated for cryptographic use</p>
+                <p><strong>SHA256:</strong> 256-bit hash function, widely used and secure</p>
+                <p><strong>SHA512:</strong> 512-bit hash function, provides higher security</p>
+                <p><strong>SHA224/384:</strong> Truncated versions of SHA256/512 respectively</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = element.parentElement.querySelector('button');
+        const originalText = button.textContent;
+        button.textContent = '✅ Copied!';
+        button.classList.add('bg-green-500', 'text-white');
+        button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.classList.remove('bg-green-500', 'text-white');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }, 2000);
+    });
+}
+
+function downloadHashes() {
+    {% if hash_results %}
+    const hashes = {% for algorithm, hash_value in hash_results.items %}"{{ algorithm }}: {{ hash_value }}\n"{% if not forloop.last %} + {% endif %}{% endfor %};
+    const blob = new Blob([hashes], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hashes.txt';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    {% endif %}
+}
+</script>
+{% endblock %}

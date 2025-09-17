@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Meme Generator - Toolbox{% endblock %}
+
+{% block description %}Create funny memes by uploading images and adding custom text. Easy-to-use meme generator tool.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                😂 Meme Generator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Upload an image and add funny text to create your own custom memes. Perfect for social media sharing!
+            </p>
+        </div>
+
+        <!-- Meme Generator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Image Upload -->
+                <div>
+                    <label for="{{ form.image_file.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.image_file.label }}
+                    </label>
+                    {{ form.image_file }}
+                    {% if form.image_file.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.image_file.help_text }}</p>
+                    {% endif %}
+                    {% if form.image_file.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.image_file.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Top Text -->
+                    <div>
+                        <label for="{{ form.top_text.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.top_text.label }}
+                        </label>
+                        {{ form.top_text }}
+                        {% if form.top_text.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.top_text.help_text }}</p>
+                        {% endif %}
+                        {% if form.top_text.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.top_text.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Bottom Text -->
+                    <div>
+                        <label for="{{ form.bottom_text.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.bottom_text.label }}
+                        </label>
+                        {{ form.bottom_text }}
+                        {% if form.bottom_text.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.bottom_text.help_text }}</p>
+                        {% endif %}
+                        {% if form.bottom_text.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.bottom_text.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Font Size -->
+                <div>
+                    <label for="{{ form.font_size.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.font_size.label }} (<span id="font-size-display">{{ form.font_size.initial }}</span>)
+                    </label>
+                    {{ form.font_size }}
+                    {% if form.font_size.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.font_size.help_text }}</p>
+                    {% endif %}
+                    {% if form.font_size.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.font_size.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        😂 Generate Meme
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if meme_result %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            {% if meme_result.success %}
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">🎉 Your Meme is Ready!</h2>
+                
+                <!-- Generated Meme Display -->
+                <div class="text-center mb-6">
+                    <img src="data:image/jpeg;base64,{{ meme_result.image_data }}" 
+                         alt="Generated Meme" 
+                         class="max-w-full h-auto rounded-lg shadow-md mx-auto"
+                         style="max-height: 600px;">
+                </div>
+
+                <!-- Meme Details -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Top Text</div>
+                        <div class="text-lg font-semibold text-gray-800">{{ meme_result.top_text|default:"None" }}</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Bottom Text</div>
+                        <div class="text-lg font-semibold text-gray-800">{{ meme_result.bottom_text|default:"None" }}</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Font Size</div>
+                        <div class="text-lg font-semibold text-gray-800">{{ meme_result.font_size }}px</div>
+                    </div>
+                </div>
+
+                <!-- Download Option -->
+                <div class="text-center">
+                    <button onclick="downloadMeme()" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        💾 Download Meme
+                    </button>
+                </div>
+
+            {% else %}
+                <!-- Error Message -->
+                <h2 class="text-2xl font-bold text-red-900 mb-4 text-center">❌ Meme Generation Failed</h2>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="text-red-800">
+                        <p><strong>Error:</strong> {{ meme_result.error }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Tips Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Meme Creation Tips</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>Image Quality:</strong> Use high-resolution images for better text readability</p>
+                <p><strong>Text Placement:</strong> Keep text short and punchy for maximum impact</p>
+                <p><strong>Font Size:</strong> Adjust font size based on image dimensions and text length</p>
+                <p><strong>Classic Format:</strong> Top text for setup, bottom text for punchline works best</p>
+                <p><strong>File Size:</strong> Images up to 10MB are supported for processing</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update font size display
+document.addEventListener('DOMContentLoaded', function() {
+    const fontSizeSlider = document.getElementById('{{ form.font_size.id_for_label }}');
+    const fontSizeDisplay = document.getElementById('font-size-display');
+    
+    if (fontSizeSlider && fontSizeDisplay) {
+        fontSizeSlider.addEventListener('input', function() {
+            fontSizeDisplay.textContent = this.value;
+        });
+    }
+});
+
+function downloadMeme() {
+    {% if meme_result and meme_result.success %}
+    // Convert base64 to blob and download
+    const base64Data = '{{ meme_result.image_data }}';
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+    
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/jpeg' });
+    
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'my-meme.jpg';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    {% endif %}
+}
+</script>
+{% endblock %}

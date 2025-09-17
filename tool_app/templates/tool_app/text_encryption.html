@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Text Encryption - Toolbox{% endblock %}
+
+{% block description %}Encrypt and decrypt text using various algorithms including Base64, Caesar Cipher, and ROT13. Text security tools.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🔐 Text Encryption
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Encrypt and decrypt text using various algorithms including Base64 encoding, Caesar cipher, and ROT13.
+            </p>
+        </div>
+
+        <!-- Text Encryption Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Operation -->
+                    <div>
+                        <label for="{{ form.operation.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.operation.label }}
+                        </label>
+                        {{ form.operation }}
+                        {% if form.operation.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.operation.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Algorithm -->
+                    <div>
+                        <label for="{{ form.algorithm.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.algorithm.label }}
+                        </label>
+                        {{ form.algorithm }}
+                        {% if form.algorithm.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form.algorithm.errors|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Text Input -->
+                <div>
+                    <label for="{{ form.text_input.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.text_input.label }}
+                    </label>
+                    {{ form.text_input }}
+                    {% if form.text_input.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.text_input.help_text }}</p>
+                    {% endif %}
+                    {% if form.text_input.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.text_input.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Caesar Cipher Key -->
+                <div id="caesar-key-field" style="display: none;">
+                    <label for="{{ form.key.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.key.label }}
+                    </label>
+                    {{ form.key }}
+                    {% if form.key.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.key.help_text }}</p>
+                    {% endif %}
+                    {% if form.key.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.key.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        🔐 Process Text
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if result %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            {% if result.success %}
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+                    {% if result.operation == 'encrypt' %}🔒 Encrypted Text{% else %}🔓 Decrypted Text{% endif %}
+                </h2>
+                
+                <!-- Result Details -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Operation</div>
+                        <div class="text-lg font-semibold text-gray-800 capitalize">{{ result.operation }}</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Algorithm</div>
+                        <div class="text-lg font-semibold text-gray-800">
+                            {% if result.algorithm == 'base64' %}Base64{% elif result.algorithm == 'caesar' %}Caesar Cipher{% elif result.algorithm == 'rot13' %}ROT13{% endif %}
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-sm text-gray-600">Length</div>
+                        <div class="text-lg font-semibold text-gray-800">{{ result.result|length }} chars</div>
+                    </div>
+                </div>
+
+                <!-- Original Text -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">Original Text</h3>
+                        <button onclick="copyToClipboard('original-text')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-40 overflow-auto" id="original-text">
+                        <pre class="text-sm text-gray-700 whitespace-pre-wrap">{{ result.original_text }}</pre>
+                    </div>
+                </div>
+
+                <!-- Processed Result -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            {% if result.operation == 'encrypt' %}Encrypted{% else %}Decrypted{% endif %} Text
+                        </h3>
+                        <button onclick="copyToClipboard('result-text')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-40 overflow-auto" id="result-text">
+                        <pre class="text-sm text-gray-700 whitespace-pre-wrap font-mono">{{ result.result }}</pre>
+                    </div>
+                </div>
+
+                <!-- Download Option -->
+                <div class="mt-6 text-center">
+                    <button onclick="downloadResult()" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        💾 Download Result
+                    </button>
+                </div>
+
+            {% else %}
+                <!-- Error Message -->
+                <h2 class="text-2xl font-bold text-red-900 mb-4 text-center">❌ Processing Failed</h2>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="text-red-800">
+                        <p><strong>Error:</strong> {{ result.error }}</p>
+                        <p class="mt-2"><strong>Operation:</strong> {{ result.operation|capfirst }}</p>
+                        <p><strong>Algorithm:</strong> {{ result.algorithm|upper }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">ℹ️ About Encryption Algorithms</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>Base64:</strong> Encoding scheme that converts binary data to ASCII text. Not encryption, but useful for data transmission.</p>
+                <p><strong>Caesar Cipher:</strong> Simple substitution cipher where each letter is shifted by a fixed number of positions.</p>
+                <p><strong>ROT13:</strong> Special case of Caesar cipher with a shift of 13. Often used for simple text obfuscation.</p>
+                <p><strong>Security Note:</strong> These are basic algorithms for educational purposes. Use proper encryption for sensitive data.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Show/hide Caesar key field based on algorithm selection
+document.addEventListener('DOMContentLoaded', function() {
+    const algorithmSelect = document.getElementById('{{ form.algorithm.id_for_label }}');
+    const keyField = document.getElementById('caesar-key-field');
+    
+    function toggleKeyField() {
+        if (algorithmSelect.value === 'caesar') {
+            keyField.style.display = 'block';
+        } else {
+            keyField.style.display = 'none';
+        }
+    }
+    
+    algorithmSelect.addEventListener('change', toggleKeyField);
+    toggleKeyField(); // Initial check
+});
+
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = element.parentElement.querySelector('button');
+        const originalText = button.textContent;
+        button.textContent = '✅ Copied!';
+        button.classList.add('bg-green-500', 'text-white');
+        button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.classList.remove('bg-green-500', 'text-white');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }, 2000);
+    });
+}
+
+function downloadResult() {
+    {% if result and result.success %}
+    const content = `Original Text:\n${`{{ result.original_text|escapejs }}`}\n\n` +
+                   `{% if result.operation == 'encrypt' %}Encrypted{% else %}Decrypted{% endif %} Text ({{ result.algorithm|upper }}):\n${`{{ result.result|escapejs }}`}\n\n` +
+                   `Operation: {{ result.operation|capfirst }}\n` +
+                   `Algorithm: {{ result.algorithm|upper }}\n` +
+                   `Processed at: ${new Date().toLocaleString()}`;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'text-encryption-result.txt';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    {% endif %}
+}
+</script>
+{% endblock %}

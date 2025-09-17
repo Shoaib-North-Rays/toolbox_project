@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}JWT Decoder - Toolbox{% endblock %}
+
+{% block description %}Decode JWT (JSON Web Tokens) to view header, payload, and signature information. Safe JWT token analysis tool.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🎫 JWT Decoder
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Decode JWT (JSON Web Tokens) to view their header, payload, and signature components safely without verification.
+            </p>
+        </div>
+
+        <!-- JWT Decoder Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- JWT Token Input -->
+                <div>
+                    <label for="{{ form.jwt_token.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.jwt_token.label }}
+                    </label>
+                    {{ form.jwt_token }}
+                    {% if form.jwt_token.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.jwt_token.help_text }}</p>
+                    {% endif %}
+                    {% if form.jwt_token.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.jwt_token.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        🎫 Decode JWT
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if jwt_data %}
+        <div class="space-y-6">
+            {% if jwt_data.valid_format %}
+                <!-- Header Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-blue-900">📋 Header</h2>
+                        <button onclick="copyToClipboard('jwt_header')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 overflow-auto" id="jwt_header">
+                        <pre class="text-sm font-mono">{{ jwt_data.header|pprint }}</pre>
+                    </div>
+                </div>
+
+                <!-- Payload Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-green-900">📄 Payload</h2>
+                        <button onclick="copyToClipboard('jwt_payload')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 overflow-auto" id="jwt_payload">
+                        <pre class="text-sm font-mono">{{ jwt_data.payload|pprint }}</pre>
+                    </div>
+                    
+                    <!-- Timestamp Information -->
+                    <div class="mt-4 space-y-2">
+                        {% if jwt_data.payload.exp_readable %}
+                        <div class="flex justify-between items-center py-2 px-3 bg-red-50 rounded">
+                            <span class="text-sm font-medium text-red-800">Expires:</span>
+                            <span class="text-sm text-red-700">{{ jwt_data.payload.exp_readable }}</span>
+                        </div>
+                        {% endif %}
+                        {% if jwt_data.payload.iat_readable %}
+                        <div class="flex justify-between items-center py-2 px-3 bg-blue-50 rounded">
+                            <span class="text-sm font-medium text-blue-800">Issued At:</span>
+                            <span class="text-sm text-blue-700">{{ jwt_data.payload.iat_readable }}</span>
+                        </div>
+                        {% endif %}
+                        {% if jwt_data.payload.nbf_readable %}
+                        <div class="flex justify-between items-center py-2 px-3 bg-yellow-50 rounded">
+                            <span class="text-sm font-medium text-yellow-800">Not Before:</span>
+                            <span class="text-sm text-yellow-700">{{ jwt_data.payload.nbf_readable }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Signature Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-purple-900 mb-4">🔐 Signature</h2>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="text-sm font-mono text-gray-700">{{ jwt_data.signature }}</p>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-600">
+                        <strong>Note:</strong> The signature is truncated for display purposes. This tool does not verify the signature.
+                    </p>
+                </div>
+
+            {% else %}
+                <!-- Error Message -->
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                    <h2 class="text-2xl font-bold text-red-900 mb-4">❌ Decoding Failed</h2>
+                    <div class="text-red-800">
+                        <p><strong>Error:</strong> {{ jwt_data.error }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">ℹ️ About JWT Tokens</h3>
+            <div class="space-y-2 text-blue-800">
+                <p><strong>JWT Structure:</strong> JWTs consist of three parts separated by dots: Header.Payload.Signature</p>
+                <p><strong>Header:</strong> Contains metadata about the token (algorithm, type)</p>
+                <p><strong>Payload:</strong> Contains claims (data) about the user or entity</p>
+                <p><strong>Signature:</strong> Used to verify the token wasn't tampered with</p>
+                <p><strong>Security Note:</strong> This tool only decodes tokens without verification. Never trust unverified tokens!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = element.parentElement.querySelector('button');
+        const originalText = button.textContent;
+        button.textContent = '✅ Copied!';
+        button.classList.add('bg-green-500', 'text-white');
+        button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.classList.remove('bg-green-500', 'text-white');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

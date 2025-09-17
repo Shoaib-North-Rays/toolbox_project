@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+
+{% block title %}Video to Audio Extractor | ToolBox{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-film me-3"></i>Video to Audio Extractor
+                </h1>
+                <p class="lead text-muted">Extract high-quality audio tracks from your video files with optional time range selection</p>
+            </div>
+
+            <!-- Extraction Form -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload me-2"></i>Upload Video & Extract Audio
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="videoToAudioForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.video_file.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-video me-2"></i>Select Video File
+                                </label>
+                                {{ form.video_file }}
+                                <div class="form-text">
+                                    Supported formats: MP4, AVI, MKV, MOV, WMV, FLV, WEBM (max 500MB)
+                                </div>
+                                {% if form.video_file.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.video_file.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.audio_format.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-file-audio me-2"></i>Audio Format
+                                </label>
+                                {{ form.audio_format }}
+                                {% if form.audio_format.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.audio_format.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.audio_quality.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-sliders-h me-2"></i>Audio Quality (kbps)
+                                </label>
+                                {{ form.audio_quality }}
+                                <div class="form-text">Higher values = better quality & larger file size</div>
+                                {% if form.audio_quality.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.audio_quality.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <h6 class="fw-bold text-muted mb-2">
+                                    <i class="fas fa-scissors me-2"></i>Time Range (Optional)
+                                </h6>
+                                <div class="form-text mb-2">Extract audio from a specific time range. Leave blank to extract entire audio.</div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label for="{{ form.start_time.id_for_label }}" class="form-label">
+                                            <i class="fas fa-play me-1"></i>Start Time
+                                        </label>
+                                        {{ form.start_time }}
+                                        <div class="form-text">Format: MM:SS or HH:MM:SS (e.g., 1:30 or 0:01:30)</div>
+                                        {% if form.start_time.errors %}
+                                            <div class="text-danger mt-1">
+                                                {% for error in form.start_time.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-6 mb-2">
+                                        <label for="{{ form.end_time.id_for_label }}" class="form-label">
+                                            <i class="fas fa-stop me-1"></i>End Time
+                                        </label>
+                                        {{ form.end_time }}
+                                        <div class="form-text">Format: MM:SS or HH:MM:SS (e.g., 5:00 or 0:05:00)</div>
+                                        {% if form.end_time.errors %}
+                                            <div class="text-danger mt-1">
+                                                {% for error in form.end_time.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-magic me-2"></i>Extract Audio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Extraction Results -->
+            {% if extraction_result %}
+                {% if extraction_result.success %}
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Audio Extraction Complete
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Video File Info:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Duration:</strong> {{ extraction_result.video_info.duration|floatformat:2 }}s</li>
+                                        <li><strong>Frame Rate:</strong> {{ extraction_result.video_info.fps|floatformat:1 }} fps</li>
+                                        <li><strong>Resolution:</strong> {{ extraction_result.video_info.size.0 }}x{{ extraction_result.video_info.size.1 }}</li>
+                                        <li><strong>Has Audio:</strong> 
+                                            {% if extraction_result.video_info.has_audio %}
+                                                <span class="text-success"><i class="fas fa-check"></i> Yes</span>
+                                            {% else %}
+                                                <span class="text-danger"><i class="fas fa-times"></i> No</span>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted">Extracted Audio Info:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Format:</strong> {{ extraction_result.audio_info.format }}</li>
+                                        <li><strong>Duration:</strong> {{ extraction_result.audio_info.duration|floatformat:2 }}s</li>
+                                        <li><strong>Quality:</strong> {{ extraction_result.audio_info.quality }}</li>
+                                        <li><strong>File Size:</strong> {{ extraction_result.audio_info.size|filesizeformat }}</li>
+                                        {% if extraction_result.start_time %}
+                                            <li><strong>Start Time:</strong> {{ extraction_result.start_time }}</li>
+                                        {% endif %}
+                                        {% if extraction_result.end_time %}
+                                            <li><strong>End Time:</strong> {{ extraction_result.end_time }}</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="data:audio/{{ extraction_result.audio_info.format|lower }};base64,{{ extraction_result.audio_data }}" 
+                                   download="{{ extraction_result.filename }}" 
+                                   class="btn btn-success btn-lg me-3">
+                                    <i class="fas fa-download me-2"></i>Download Extracted Audio
+                                </a>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="fas fa-redo me-2"></i>Extract Another
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Extraction Failed
+                        </h5>
+                        <p class="mb-0">{{ extraction_result.error }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Features & Information -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-info-circle me-2"></i>Supported Video Formats
+                            </h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>MP4</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>AVI</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>MKV</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>MOV</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>WMV</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>FLV</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>WEBM</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>3GP</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-cogs me-2"></i>Audio Quality Options
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li><strong>96 kbps:</strong> Low quality, small file</li>
+                                <li><strong>128 kbps:</strong> Standard quality</li>
+                                <li><strong>192 kbps:</strong> High quality (recommended)</li>
+                                <li><strong>256 kbps:</strong> Very high quality</li>
+                                <li><strong>320 kbps:</strong> Maximum quality</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Use Cases & Tips -->
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>Common Use Cases & Tips
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Content Creation</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Extract music from videos</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Create podcasts from recordings</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Audio-only versions</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Learning & Study</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Convert lectures to audio</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Extract specific segments</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Create audio notes</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="fw-bold">Pro Tips</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Use MP3 for general use</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>WAV for lossless quality</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Set time range for clips</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Time Format Examples
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>1:30</strong> = 1 minute 30 seconds</li>
+                                    <li><strong>0:01:30</strong> = 1 minute 30 seconds</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>5:00</strong> = 5 minutes</li>
+                                    <li><strong>1:05:30</strong> = 1 hour 5 minutes 30 seconds</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetForm() {
+    document.getElementById('videoToAudioForm').reset();
+    // Remove any existing results
+    window.location.href = window.location.pathname;
+}
+
+// Time format validation and helper
+document.addEventListener('DOMContentLoaded', function() {
+    const timeInputs = document.querySelectorAll('input[name="start_time"], input[name="end_time"]');
+    
+    timeInputs.forEach(input => {
+        input.addEventListener('blur', function(e) {
+            const value = e.target.value.trim();
+            if (value && !isValidTimeFormat(value)) {
+                e.target.setCustomValidity('Please use format MM:SS or HH:MM:SS');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    });
+});
+
+function isValidTimeFormat(time) {
+    // Check for MM:SS or HH:MM:SS format
+    const timeRegex = /^(\d{1,2}):([0-5]\d)$|^(\d{1,2}):([0-5]\d):([0-5]\d)$/;
+    return timeRegex.test(time);
+}
+
+// File size display
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const size = (file.size / (1024 * 1024)).toFixed(2);
+                console.log(`Video file size: ${size}MB`);
+                
+                if (file.size > 500 * 1024 * 1024) { // 500MB limit
+                    alert('File size exceeds 500MB limit. Please choose a smaller file.');
+                    e.target.value = '';
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

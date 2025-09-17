@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}URL Encoder/Decoder - Web Tools - Toolbox{% endblock %}
+
+{% block description %}Encode or decode URLs for safe transmission. Handle special characters and spaces in URLs properly.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-teal-100 py-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">URL Encoder/Decoder</h1>
+            <p class="text-gray-600">Encode or decode URLs for safe transmission</p>
+        </div>
+
+        <!-- Tool Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.url_text.label }}
+                    </label>
+                    {{ form.url_text }}
+                    {% if form.url_text.help_text %}
+                        <p class="text-sm text-gray-500 mt-1">{{ form.url_text.help_text }}</p>
+                    {% endif %}
+                    {% if form.url_text.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.url_text.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.operation.label }}
+                    </label>
+                    {{ form.operation }}
+                    {% if form.operation.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.operation.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                        Process URL
+                    </button>
+                    <a href="{% url 'tool_app:home' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">
+                        Back to Home
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        {% if result %}
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Result</h2>
+                <button onclick="copyResult()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Copy
+                </button>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-4">
+                <code id="result-output" class="text-sm text-gray-800 break-all">{{ result }}</code>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Information -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">URL Encoding Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">When to Use URL Encoding</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• URLs with special characters</li>
+                        <li>• Spaces in URLs</li>
+                        <li>• Non-ASCII characters</li>
+                        <li>• Query string parameters</li>
+                        <li>• Form data submission</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Common Encodings</h4>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Space → <code>%20</code></li>
+                        <li>• & → <code>%26</code></li>
+                        <li>• = → <code>%3D</code></li>
+                        <li>• ? → <code>%3F</code></li>
+                        <li>• # → <code>%23</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyResult() {
+        const output = document.getElementById('result-output');
+        const textArea = document.createElement('textarea');
+        textArea.value = output.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        // Show feedback
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copied!';
+        button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        button.classList.add('bg-blue-800');
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            button.classList.remove('bg-blue-800');
+        }, 2000);
+    }
+</script>
+{% endblock %}

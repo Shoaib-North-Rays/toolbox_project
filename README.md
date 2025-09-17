@@ -6,6 +6,14 @@ A production-ready Django web application providing online file conversion tools
 
 - **File Converter**: Convert between TXT, PDF, DOC, and DOCX formats
 - **Text to PDF**: Convert plain text to formatted PDF documents
+- **Image Compression**: Reduce image file sizes while maintaining quality
+- **Image Format Conversion**: Convert between JPG, PNG, WebP, BMP, and TIFF
+- **QR Code Generator**: Generate QR codes for text, URLs, or any data
+- **Meta Tag Generator**: Create SEO-optimized HTML meta tags
+- **URL Encoder/Decoder**: Encode/decode URLs for safe transmission
+- **Domain IP Resolver**: Resolve domains to IP addresses and DNS records
+- **Whois Lookup**: Get domain registration information
+- **Robots.txt & Sitemap Generator**: Generate SEO files for search engines
 - **Responsive Design**: Mobile-friendly interface using Tailwind CSS
 - **JSON API**: RESTful API endpoints for programmatic access
 - **Secure Processing**: Files are processed securely with validation
@@ -17,6 +25,10 @@ A production-ready Django web application providing online file conversion tools
 - **Frontend**: Tailwind CSS (via CDN)
 - **Database**: SQLite (development) / PostgreSQL (production)
 - **File Processing**: ReportLab (PDF generation), python-docx (Word documents)
+- **Image Processing**: Pillow (PIL Fork) for image operations
+- **QR Code Generation**: qrcode library with SVG support
+- **Web & SEO Tools**: DNS resolution (dnspython), domain lookups (python-whois)
+- **Networking**: HTTP requests, URL encoding/decoding
 - **Styling**: Tailwind CSS with responsive design
 
 ## Quick Start
@@ -107,6 +119,61 @@ toolbox_project/
 - Convert plain text to formatted PDF documents
 - Optional document title
 - Professional formatting with proper margins and typography
+
+### 3. Image Compression
+- **URL**: `/image-compression/`
+- Reduce image file sizes while maintaining quality
+- Adjustable compression quality (10-95%)
+- Optional image resizing
+- Support for JPG, PNG, GIF, BMP, WebP, TIFF
+
+### 4. Image Format Conversion
+- **URL**: `/image-conversion/`
+- Convert between different image formats
+- Support for JPG, PNG, WebP, BMP, TIFF
+- Quality control for lossy formats
+- Automatic color mode conversion
+
+### 5. QR Code Generator
+- **URL**: `/qr-code-generator/`
+- Generate QR codes for text, URLs, or any data
+- Multiple sizes: Small (200px) to Extra Large (800px)
+- Output formats: PNG, JPEG, SVG
+- Professional quality output
+
+### 6. Meta Tag Generator
+- **URL**: `/meta-tag-generator/`
+- Generate SEO-optimized HTML meta tags
+- Includes Open Graph and Twitter Card tags
+- Title, description, and keyword optimization
+- Canonical URL and author information
+
+### 7. URL Encoder/Decoder
+- **URL**: `/url-encoder-decoder/`
+- Encode or decode URLs for safe transmission
+- Handle special characters and spaces
+- Essential for web development and API integration
+
+### 8. Domain IP Resolver
+- **URL**: `/domain-ip-resolver/`
+- Resolve domain names to IP addresses
+- Support for A, AAAA, CNAME, MX, NS, TXT records
+- Includes reverse DNS lookup
+- TTL information display
+
+### 9. Whois Lookup
+- **URL**: `/whois-lookup/`
+- Get domain registration information
+- Registrar, creation, and expiration dates
+- Name servers and status information
+- Ownership details when available
+
+### 10. Robots.txt & Sitemap Generator
+- **URL**: `/robots-sitemap-generator/`
+- Generate robots.txt for search engine crawling
+- Create XML sitemaps with proper formatting
+- Customizable disallow paths and crawl delays
+- SEO optimization for better indexing
 
 ## API Endpoints
 
@@ -232,9 +299,13 @@ For issues and questions:
 
 ## Future Enhancements
 
-- [ ] Add more file format support (Excel, PowerPoint, Images)
+- [ ] Add more file format support (Excel, PowerPoint)
 - [ ] Implement batch file conversion
 - [ ] Add user accounts and conversion history
 - [ ] OCR support for scanned documents
 - [ ] Real-time conversion progress tracking
 - [ ] Advanced PDF manipulation tools
+- [ ] Advanced image editing (rotate, crop, filters)
+- [ ] Bulk image processing
+- [ ] Custom QR code styling and colors
+- [ ] API rate limiting and authentication

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Emoji Translator - Toolbox{% endblock %}
+
+{% block description %}Translate text to emoji expressions. Add fun emoji to your messages and social media posts.{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                😀 Emoji Translator
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Transform your text into expressive emoji messages. Perfect for social media, messages, and adding fun to your content!
+            </p>
+        </div>
+
+        <!-- Emoji Translator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Text Input -->
+                <div>
+                    <label for="{{ form.text_input.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.text_input.label }}
+                    </label>
+                    {{ form.text_input }}
+                    {% if form.text_input.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.text_input.help_text }}</p>
+                    {% endif %}
+                    {% if form.text_input.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.text_input.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Translation Mode -->
+                <div>
+                    <label for="{{ form.translation_mode.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.translation_mode.label }}
+                    </label>
+                    {{ form.translation_mode }}
+                    {% if form.translation_mode.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ form.translation_mode.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                        😀 Translate to Emoji
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if translation_result %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">🎉 Translation Complete!</h2>
+            
+            <!-- Translation Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                    <div class="text-sm text-gray-600">Translation Mode</div>
+                    <div class="text-lg font-semibold text-gray-800 capitalize">{{ translation_result.translation_mode }}</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                    <div class="text-sm text-gray-600">Emojis Found</div>
+                    <div class="text-lg font-semibold text-gray-800">{{ translation_result.emojis_found }}</div>
+                </div>
+            </div>
+
+            <!-- Original Text -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-800">Original Text</h3>
+                    <button onclick="copyToClipboard('original-text')" 
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                        📋 Copy
+                    </button>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4" id="original-text">
+                    <p class="text-gray-700">{{ translation_result.original_text }}</p>
+                </div>
+            </div>
+
+            <!-- Translated Text -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-800">Emoji Translation</h3>
+                    <button onclick="copyToClipboard('translated-text')" 
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                        📋 Copy
+                    </button>
+                </div>
+                <div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-4 border border-pink-200" id="translated-text">
+                    <p class="text-gray-800 text-lg">{{ translation_result.translated_text }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Available Emojis Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">😊 Available Emoji Translations</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 text-sm">
+                <div class="text-blue-800"><strong>happy:</strong> 😊</div>
+                <div class="text-blue-800"><strong>sad:</strong> 😢</div>
+                <div class="text-blue-800"><strong>love:</strong> ❤️</div>
+                <div class="text-blue-800"><strong>fire:</strong> 🔥</div>
+                <div class="text-blue-800"><strong>water:</strong> 💧</div>
+                <div class="text-blue-800"><strong>sun:</strong> ☀️</div>
+                <div class="text-blue-800"><strong>moon:</strong> 🌙</div>
+                <div class="text-blue-800"><strong>star:</strong> ⭐</div>
+                <div class="text-blue-800"><strong>cat:</strong> 🐱</div>
+                <div class="text-blue-800"><strong>dog:</strong> 🐶</div>
+                <div class="text-blue-800"><strong>car:</strong> 🚗</div>
+                <div class="text-blue-800"><strong>house:</strong> 🏠</div>
+                <div class="text-blue-800"><strong>food:</strong> 🍔</div>
+                <div class="text-blue-800"><strong>pizza:</strong> 🍕</div>
+                <div class="text-blue-800"><strong>music:</strong> 🎵</div>
+                <div class="text-blue-800"><strong>phone:</strong> 📱</div>
+                <div class="text-blue-800"><strong>good:</strong> 👍</div>
+                <div class="text-blue-800"><strong>cool:</strong> 😎</div>
+            </div>
+            <p class="mt-4 text-blue-700 text-sm">And many more! The translator recognizes 40+ common words and converts them to relevant emojis.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = element.parentElement.querySelector('button');
+        const originalText = button.textContent;
+        button.textContent = '✅ Copied!';
+        button.classList.add('bg-green-500', 'text-white');
+        button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.classList.remove('bg-green-500', 'text-white');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}
