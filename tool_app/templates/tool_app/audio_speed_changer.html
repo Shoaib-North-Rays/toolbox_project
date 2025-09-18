@@ -1,238 +1,397 @@
 {% extends 'base.html' %}
 
-{% block title %}Audio Speed Changer | ToolBox{% endblock %}
+{% block title %}Audio Speed Changer - Change Audio Speed & Tempo | Toolbox{% endblock %}
+
+{% block description %}Change audio speed and tempo with optional pitch preservation. Speed up or slow down your audio files for learning, content creation, and accessibility.{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-8">
-            <div class="text-center mb-5">
-                <h1 class="display-5 fw-bold text-primary mb-3">
-                    <i class="fas fa-tachometer-alt me-3"></i>Audio Speed Changer
-                </h1>
-                <p class="lead text-muted">Speed up or slow down your audio files while optionally preserving pitch</p>
-            </div>
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            Audio Speed Changer
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Speed up or slow down your audio files while optionally preserving pitch. 
+            Perfect for learning, content creation, and accessibility needs.
+        </p>
+    </div>
 
-            <!-- Processing Form -->
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-upload me-2"></i>Upload & Adjust Speed
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data" id="speedChangerForm">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="{{ form.audio_file.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-file-audio me-2"></i>Select Audio File
+    <!-- Processing Form -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg mb-8">
+        <div class="bg-blue-600 text-white px-6 py-4 rounded-t-lg">
+            <h2 class="text-xl font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"/>
+                    <path d="M9 13h2v5a1 1 0 11-2 0v-5z"/>
+                </svg>
+                Upload & Adjust Speed
+            </h2>
+        </div>
+        <div class="p-6">
+            <form method="post" enctype="multipart/form-data" id="speedChangerForm" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- File Upload -->
+                <div>
+                    <label for="{{ form.audio_file.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217z" clip-rule="evenodd"/>
+                        </svg>
+                        Select Audio File
+                    </label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-400 transition-colors" id="drop-zone">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="{{ form.audio_file.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload an audio file</span>
+                                    {{ form.audio_file }}
                                 </label>
-                                {{ form.audio_file }}
-                                <div class="form-text">
-                                    Supported formats: MP3, WAV, M4A, OGG, FLAC, AAC (max 100MB)
-                                </div>
-                                {% if form.audio_file.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.audio_file.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                <p class="pl-1">or drag and drop</p>
                             </div>
+                            <p class="text-xs text-gray-500">MP3, WAV, M4A, OGG, FLAC, AAC up to 100MB</p>
+                        </div>
+                    </div>
+                    {% if form.audio_file.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {% for error in form.audio_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.speed_multiplier.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-fast-forward me-2"></i>Speed Multiplier
-                                </label>
-                                {{ form.speed_multiplier }}
-                                <div class="form-text">
-                                    1.0 = normal speed, 2.0 = double speed, 0.5 = half speed
-                                </div>
-                                {% if form.speed_multiplier.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.speed_multiplier.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Speed Multiplier -->
+                    <div>
+                        <label for="{{ form.speed_multiplier.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 9H17a1 1 0 110 2h-5.586l4.293 4.293a1 1 0 010 1.414zM9 2a1 1 0 00-.707.293l-5 5a1 1 0 000 1.414l5 5A1 1 0 009 14V4a1 1 0 000-2z" clip-rule="evenodd"/>
+                            </svg>
+                            Speed Multiplier
+                        </label>
+                        {{ form.speed_multiplier }}
+                        <p class="mt-1 text-sm text-gray-500">1.0 = normal speed, 2.0 = double speed, 0.5 = half speed</p>
+                        {% if form.speed_multiplier.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {% for error in form.speed_multiplier.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
+                        {% endif %}
+                    </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.output_format.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-file-export me-2"></i>Output Format
-                                </label>
-                                {{ form.output_format }}
-                                {% if form.output_format.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.output_format.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                    <!-- Output Format -->
+                    <div>
+                        <label for="{{ form.output_format.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                            Output Format
+                        </label>
+                        {{ form.output_format }}
+                        {% if form.output_format.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {% for error in form.output_format.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
+                        {% endif %}
+                    </div>
+                </div>
 
-                            <div class="col-md-12 mb-3">
-                                <div class="form-check">
-                                    {{ form.preserve_pitch }}
-                                    <label class="form-check-label" for="{{ form.preserve_pitch.id_for_label }}">
-                                        <i class="fas fa-music me-2"></i>Preserve Pitch (recommended for music/voice)
-                                    </label>
-                                    <div class="form-text">
-                                        When enabled, the audio pitch stays the same despite speed changes
-                                    </div>
+                <!-- Preserve Pitch -->
+                <div>
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ form.preserve_pitch }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ form.preserve_pitch.id_for_label }}" class="font-medium text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" clip-rule="evenodd"/>
+                                </svg>
+                                Preserve Pitch (recommended for music/voice)
+                            </label>
+                            <p class="text-gray-500 mt-1">When enabled, the audio pitch stays the same despite speed changes</p>
+                        </div>
+                    </div>
+                    {% if form.preserve_pitch.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {% for error in form.preserve_pitch.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                        Change Speed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Processing Results -->
+    {% if processing_result %}
+        {% if processing_result.success %}
+            <div class="bg-white rounded-lg border border-gray-200 shadow-lg mb-8">
+                <div class="bg-green-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Speed Change Complete
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3">Processing Info</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Speed Multiplier:</span>
+                                    <span class="font-medium">{{ processing_result.speed_multiplier }}x</span>
                                 </div>
-                                {% if form.preserve_pitch.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.preserve_pitch.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pitch Preserved:</span>
+                                    {% if processing_result.preserve_pitch %}
+                                        <span class="font-medium text-green-600 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Yes
+                                        </span>
+                                    {% else %}
+                                        <span class="font-medium text-orange-600 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                            No
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Output Format:</span>
+                                    <span class="font-medium">{{ processing_result.output_format }}</span>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-magic me-2"></i>Change Speed
-                            </button>
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3">Duration Change</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Original Duration:</span>
+                                    <span class="font-medium">{{ processing_result.original_duration|floatformat:2 }}s</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">New Duration:</span>
+                                    <span class="font-medium">{{ processing_result.new_duration|floatformat:2 }}s</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Time Change:</span>
+                                    {% if processing_result.speed_multiplier > 1 %}
+                                        <span class="font-medium text-green-600">{{ processing_result.original_duration|floatformat:2 }}s faster</span>
+                                    {% else %}
+                                        <span class="font-medium text-blue-600">{{ processing_result.new_duration|floatformat:2 }}s slower</span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">File Size:</span>
+                                    <span class="font-medium">{{ processing_result.size|filesizeformat }}</span>
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+
+                    <div class="text-center space-x-4">
+                        <a href="data:audio/{{ processing_result.output_format|lower }};base64,{{ processing_result.audio_data }}" 
+                           download="{{ processing_result.filename }}" 
+                           class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Download Speed-Changed Audio
+                        </a>
+                        <button type="button" onclick="resetForm()" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                            Process Another
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <!-- Processing Results -->
-            {% if processing_result %}
-                {% if processing_result.success %}
-                    <div class="card shadow-lg border-0 mb-4">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-check-circle me-2"></i>Speed Change Complete
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-bold text-muted">Processing Info:</h6>
-                                    <ul class="list-unstyled">
-                                        <li><strong>Speed Multiplier:</strong> {{ processing_result.speed_multiplier }}x</li>
-                                        <li><strong>Pitch Preserved:</strong> 
-                                            {% if processing_result.preserve_pitch %}
-                                                <span class="text-success"><i class="fas fa-check"></i> Yes</span>
-                                            {% else %}
-                                                <span class="text-warning"><i class="fas fa-times"></i> No</span>
-                                            {% endif %}
-                                        </li>
-                                        <li><strong>Output Format:</strong> {{ processing_result.output_format }}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-bold text-muted">Duration Change:</h6>
-                                    <ul class="list-unstyled">
-                                        <li><strong>Original Duration:</strong> {{ processing_result.original_duration|floatformat:2 }}s</li>
-                                        <li><strong>New Duration:</strong> {{ processing_result.new_duration|floatformat:2 }}s</li>
-                                        <li><strong>Time Saved/Added:</strong> 
-                                            {% if processing_result.speed_multiplier > 1 %}
-                                                <span class="text-success">-{{ processing_result.original_duration|floatformat:2 }}s faster</span>
-                                            {% else %}
-                                                <span class="text-info">+{{ processing_result.new_duration|floatformat:2 }}s slower</span>
-                                            {% endif %}
-                                        </li>
-                                        <li><strong>File Size:</strong> {{ processing_result.size|filesizeformat }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <a href="data:audio/{{ processing_result.output_format|lower }};base64,{{ processing_result.audio_data }}" 
-                                   download="{{ processing_result.filename }}" 
-                                   class="btn btn-success btn-lg me-3">
-                                    <i class="fas fa-download me-2"></i>Download Speed-Changed Audio
-                                </a>
-                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
-                                    <i class="fas fa-redo me-2"></i>Process Another
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="alert alert-danger">
-                        <h5 class="alert-heading">
-                            <i class="fas fa-exclamation-circle me-2"></i>Processing Failed
-                        </h5>
-                        <p class="mb-0">{{ processing_result.error }}</p>
-                    </div>
-                {% endif %}
-            {% endif %}
-
-            <!-- Features & Information -->
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">
-                                <i class="fas fa-info-circle me-2"></i>Speed Examples
-                            </h5>
-                            <ul class="list-unstyled">
-                                <li><strong>0.5x:</strong> Half speed (slower)</li>
-                                <li><strong>0.75x:</strong> 25% slower</li>
-                                <li><strong>1.0x:</strong> Normal speed</li>
-                                <li><strong>1.25x:</strong> 25% faster</li>
-                                <li><strong>1.5x:</strong> 50% faster</li>
-                                <li><strong>2.0x:</strong> Double speed</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">
-                                <i class="fas fa-cogs me-2"></i>Pitch Preservation
-                            </h5>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-check text-success me-2"></i><strong>Enabled:</strong> Voice/music sounds natural</li>
-                                <li><i class="fas fa-times text-warning me-2"></i><strong>Disabled:</strong> Chipmunk/deep voice effect</li>
-                                <li><i class="fas fa-lightbulb text-info me-2"></i><strong>Tip:</strong> Use for podcasts, audiobooks</li>
-                                <li><i class="fas fa-lightbulb text-info me-2"></i><strong>Creative:</strong> Disable for special effects</li>
-                            </ul>
-                        </div>
+        {% else %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-800">Processing Failed</h3>
+                        <p class="text-red-700">{{ processing_result.error }}</p>
                     </div>
                 </div>
             </div>
+        {% endif %}
+    {% endif %}
 
-            <!-- Use Cases -->
-            <div class="card border-0 bg-light">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">
-                        <i class="fas fa-lightbulb me-2"></i>Common Use Cases
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Learning & Study</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Speed up lectures</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Slow down for comprehension</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Language learning</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Content Creation</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Podcast editing</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Voice effects</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Music remixing</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Accessibility</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Hearing impairments</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Processing difficulties</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Time constraints</li>
-                            </ul>
-                        </div>
+    <!-- Features & Information -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-blue-600 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                Speed Examples
+            </h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>0.5x:</strong> Half speed (slower)</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>0.75x:</strong> 25% slower</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>1.0x:</strong> Normal speed</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>1.25x:</strong> 25% faster</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>1.5x:</strong> 50% faster</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>2.0x:</strong> Double speed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-blue-600 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Pitch Preservation
+            </h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex items-start py-1">
+                    <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span><strong>Enabled:</strong> Voice/music sounds natural</span>
+                </div>
+                <div class="flex items-start py-1">
+                    <svg class="w-4 h-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    <span><strong>Disabled:</strong> Chipmunk/deep voice effect</span>
+                </div>
+                <div class="flex items-start py-1">
+                    <svg class="w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11 3a1 1 0 10-2 0v1.07A7.001 7.001 0 004 12v3c0 1.657 1.343 3 3 3s3-1.343 3-3v-3c0-1.657-1.343-3-3-3a3 3 0 00-1 .17V5a1 1 0 001-1V3z" clip-rule="evenodd"/>
+                    </svg>
+                    <span><strong>Tip:</strong> Use for podcasts, audiobooks</span>
+                </div>
+                <div class="flex items-start py-1">
+                    <svg class="w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11 3a1 1 0 10-2 0v1.07A7.001 7.001 0 004 12v3c0 1.657 1.343 3 3 3s3-1.343 3-3v-3c0-1.657-1.343-3-3-3a3 3 0 00-1 .17V5a1 1 0 001-1V3z" clip-rule="evenodd"/>
+                    </svg>
+                    <span><strong>Creative:</strong> Disable for special effects</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use Cases -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-blue-600 mb-6 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            Common Use Cases
+        </h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Learning & Study</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Speed up lectures</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Slow down for comprehension</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Language learning</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Content Creation</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Podcast editing</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Voice effects</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Music remixing</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Accessibility</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Hearing impairments</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Processing difficulties</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Time constraints</span>
                     </div>
                 </div>
             </div>
@@ -247,23 +406,116 @@ function resetForm() {
     window.location.href = window.location.pathname;
 }
 
-// Speed multiplier visual feedback
+// Enhanced file handling and form interactions
 document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const dropZone = document.getElementById('drop-zone');
+    const form = document.getElementById('speedChangerForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
     const speedInput = document.querySelector('input[name="speed_multiplier"]');
+    
+    // File input change handler
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                updateDropZoneText(`Selected: ${file.name}`);
+            }
+        });
+    }
+    
+    // Drag and drop functionality
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('border-blue-500', 'bg-blue-50');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+        });
+        
+        dropZone.addEventListener('drop', handleDrop);
+    }
+    
+    // Speed multiplier visual feedback
     if (speedInput) {
         speedInput.addEventListener('input', function(e) {
             const value = parseFloat(e.target.value);
             let feedback = '';
+            let color = 'text-gray-600';
             
-            if (value < 0.5) feedback = 'Very slow';
-            else if (value < 1.0) feedback = 'Slower than normal';
-            else if (value === 1.0) feedback = 'Normal speed';
-            else if (value < 2.0) feedback = 'Faster than normal';
-            else feedback = 'Very fast';
+            if (value < 0.5) {
+                feedback = 'Very slow';
+                color = 'text-blue-600';
+            } else if (value < 1.0) {
+                feedback = 'Slower than normal';
+                color = 'text-blue-500';
+            } else if (value === 1.0) {
+                feedback = 'Normal speed';
+                color = 'text-gray-600';
+            } else if (value < 2.0) {
+                feedback = 'Faster than normal';
+                color = 'text-orange-500';
+            } else {
+                feedback = 'Very fast';
+                color = 'text-red-500';
+            }
             
-            // You could add visual feedback here
-            console.log(`Speed: ${value}x (${feedback})`);
+            // Update or create feedback element
+            let feedbackEl = document.getElementById('speed-feedback');
+            if (!feedbackEl) {
+                feedbackEl = document.createElement('div');
+                feedbackEl.id = 'speed-feedback';
+                feedbackEl.className = 'mt-1 text-xs font-medium';
+                speedInput.parentNode.appendChild(feedbackEl);
+            }
+            feedbackEl.textContent = `${value}x - ${feedback}`;
+            feedbackEl.className = `mt-1 text-xs font-medium ${color}`;
         });
+    }
+    
+    // Form submission with loading state
+    if (form && submitBtn) {
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+            `;
+        });
+    }
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            updateDropZoneText(`Selected: ${files[0].name}`);
+        }
+    }
+    
+    function updateDropZoneText(text) {
+        const textEl = dropZone.querySelector('span');
+        if (textEl) {
+            textEl.textContent = text;
+        }
     }
 });
 </script>

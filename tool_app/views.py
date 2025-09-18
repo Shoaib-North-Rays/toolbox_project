@@ -2073,3 +2073,40 @@ def parse_time_to_seconds(time_str):
         return hours * 3600 + minutes * 60 + seconds
     else:
         raise ValueError('Invalid time format')
+
+
+# Static Page Views
+def about(request):
+    """About us page"""
+    return render(request, 'tool_app/about.html')
+
+
+def contact(request):
+    """Contact us page"""
+    if request.method == 'POST':
+        # Handle contact form submission
+        # In a real implementation, you would process the form and send email
+        messages.success(request, 'Thank you for your message! We will get back to you soon.')
+        return redirect('tool_app:contact')
+    
+    return render(request, 'tool_app/contact.html')
+
+
+def privacy_policy(request):
+    """Privacy policy page"""
+    return render(request, 'tool_app/privacy_policy.html')
+
+
+def terms(request):
+    """Terms and conditions page"""
+    return render(request, 'tool_app/terms.html')
+
+
+def disclaimer(request):
+    """Disclaimer page"""
+    return render(request, 'tool_app/disclaimer.html')
+
+
+def blog(request):
+    """Blog page"""
+    return render(request, 'tool_app/blog.html')

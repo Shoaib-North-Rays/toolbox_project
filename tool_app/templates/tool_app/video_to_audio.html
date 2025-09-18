@@ -1,289 +1,479 @@
 {% extends 'base.html' %}
 
-{% block title %}Video to Audio Extractor | ToolBox{% endblock %}
+{% block title %}Video to Audio Extractor - Extract Audio from Video | Toolbox{% endblock %}
+
+{% block description %}Extract high-quality audio tracks from video files with optional time range selection. Support for MP4, AVI, MKV, MOV, and more video formats.{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-8">
-            <div class="text-center mb-5">
-                <h1 class="display-5 fw-bold text-primary mb-3">
-                    <i class="fas fa-film me-3"></i>Video to Audio Extractor
-                </h1>
-                <p class="lead text-muted">Extract high-quality audio tracks from your video files with optional time range selection</p>
-            </div>
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+            </svg>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            Video to Audio Extractor
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Extract high-quality audio tracks from your video files with optional time range selection. 
+            Perfect for creating audio content from video recordings.
+        </p>
+    </div>
 
-            <!-- Extraction Form -->
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-upload me-2"></i>Upload Video & Extract Audio
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data" id="videoToAudioForm">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="{{ form.video_file.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-video me-2"></i>Select Video File
+    <!-- Extraction Form -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg mb-8">
+        <div class="bg-indigo-600 text-white px-6 py-4 rounded-t-lg">
+            <h2 class="text-xl font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"/>
+                    <path d="M9 13h2v5a1 1 0 11-2 0v-5z"/>
+                </svg>
+                Upload Video & Extract Audio
+            </h2>
+        </div>
+        <div class="p-6">
+            <form method="post" enctype="multipart/form-data" id="videoToAudioForm" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- File Upload -->
+                <div>
+                    <label for="{{ form.video_file.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                        </svg>
+                        Select Video File
+                    </label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors" id="drop-zone">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="{{ form.video_file.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                    <span>Upload a video file</span>
+                                    {{ form.video_file }}
                                 </label>
-                                {{ form.video_file }}
-                                <div class="form-text">
-                                    Supported formats: MP4, AVI, MKV, MOV, WMV, FLV, WEBM (max 500MB)
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">MP4, AVI, MKV, MOV, WMV, FLV, WEBM up to 500MB</p>
+                        </div>
+                    </div>
+                    {% if form.video_file.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {% for error in form.video_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Audio Format -->
+                    <div>
+                        <label for="{{ form.audio_format.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217z" clip-rule="evenodd"/>
+                            </svg>
+                            Audio Format
+                        </label>
+                        {{ form.audio_format }}
+                        {% if form.audio_format.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {% for error in form.audio_format.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Audio Quality -->
+                    <div>
+                        <label for="{{ form.audio_quality.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Audio Quality (kbps)
+                        </label>
+                        {{ form.audio_quality }}
+                        <p class="mt-1 text-sm text-gray-500">Higher values = better quality & larger file size</p>
+                        {% if form.audio_quality.errors %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {% for error in form.audio_quality.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Time Range Section -->
+                <div>
+                    <h3 class="text-base font-semibold text-gray-700 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                        </svg>
+                        Time Range (Optional)
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Extract audio from a specific time range. Leave blank to extract entire audio.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Start Time -->
+                        <div>
+                            <label for="{{ form.start_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 00.555.832l3 1.5a1 1 0 00.89-1.788L10 11.236V8a1 1 0 00-1.445-.832z" clip-rule="evenodd"/>
+                                </svg>
+                                Start Time
+                            </label>
+                            {{ form.start_time }}
+                            <p class="mt-1 text-xs text-gray-500">Format: MM:SS or HH:MM:SS (e.g., 1:30 or 0:01:30)</p>
+                            {% if form.start_time.errors %}
+                                <div class="mt-1 text-sm text-red-600">
+                                    {% for error in form.start_time.errors %}
+                                        {{ error }}
+                                    {% endfor %}
                                 </div>
-                                {% if form.video_file.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.video_file.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- End Time -->
+                        <div>
+                            <label for="{{ form.end_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 13a1 1 0 100-2 1 1 0 000 2zm4 0a1 1 0 100-2 1 1 0 000 2zm-2-5a1 1 0 011-1h.01a1 1 0 110 2H11a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                End Time
+                            </label>
+                            {{ form.end_time }}
+                            <p class="mt-1 text-xs text-gray-500">Format: MM:SS or HH:MM:SS (e.g., 5:00 or 0:05:00)</p>
+                            {% if form.end_time.errors %}
+                                <div class="mt-1 text-sm text-red-600">
+                                    {% for error in form.end_time.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="inline-flex items-center px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                        Extract Audio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Extraction Results -->
+    {% if extraction_result %}
+        {% if extraction_result.success %}
+            <div class="bg-white rounded-lg border border-gray-200 shadow-lg mb-8">
+                <div class="bg-green-600 text-white px-6 py-4 rounded-t-lg">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Audio Extraction Complete
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3">Video File Info</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Duration:</span>
+                                    <span class="font-medium">{{ extraction_result.video_info.duration|floatformat:2 }}s</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Frame Rate:</span>
+                                    <span class="font-medium">{{ extraction_result.video_info.fps|floatformat:1 }} fps</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Resolution:</span>
+                                    <span class="font-medium">{{ extraction_result.video_info.size.0 }}x{{ extraction_result.video_info.size.1 }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Has Audio:</span>
+                                    {% if extraction_result.video_info.has_audio %}
+                                        <span class="font-medium text-green-600 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Yes
+                                        </span>
+                                    {% else %}
+                                        <span class="font-medium text-red-600 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                            No
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-3">Extracted Audio Info</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Format:</span>
+                                    <span class="font-medium">{{ extraction_result.audio_info.format }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Duration:</span>
+                                    <span class="font-medium">{{ extraction_result.audio_info.duration|floatformat:2 }}s</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Quality:</span>
+                                    <span class="font-medium">{{ extraction_result.audio_info.quality }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">File Size:</span>
+                                    <span class="font-medium">{{ extraction_result.audio_info.size|filesizeformat }}</span>
+                                </div>
+                                {% if extraction_result.start_time %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Start Time:</span>
+                                    <span class="font-medium">{{ extraction_result.start_time }}</span>
+                                </div>
+                                {% endif %}
+                                {% if extraction_result.end_time %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">End Time:</span>
+                                    <span class="font-medium">{{ extraction_result.end_time }}</span>
+                                </div>
                                 {% endif %}
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.audio_format.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-file-audio me-2"></i>Audio Format
-                                </label>
-                                {{ form.audio_format }}
-                                {% if form.audio_format.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.audio_format.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.audio_quality.id_for_label }}" class="form-label fw-semibold">
-                                    <i class="fas fa-sliders-h me-2"></i>Audio Quality (kbps)
-                                </label>
-                                {{ form.audio_quality }}
-                                <div class="form-text">Higher values = better quality & larger file size</div>
-                                {% if form.audio_quality.errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.audio_quality.errors %}
-                                            <small>{{ error }}</small>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-12 mb-3">
-                                <h6 class="fw-bold text-muted mb-2">
-                                    <i class="fas fa-scissors me-2"></i>Time Range (Optional)
-                                </h6>
-                                <div class="form-text mb-2">Extract audio from a specific time range. Leave blank to extract entire audio.</div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6 mb-2">
-                                        <label for="{{ form.start_time.id_for_label }}" class="form-label">
-                                            <i class="fas fa-play me-1"></i>Start Time
-                                        </label>
-                                        {{ form.start_time }}
-                                        <div class="form-text">Format: MM:SS or HH:MM:SS (e.g., 1:30 or 0:01:30)</div>
-                                        {% if form.start_time.errors %}
-                                            <div class="text-danger mt-1">
-                                                {% for error in form.start_time.errors %}
-                                                    <small>{{ error }}</small>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="col-md-6 mb-2">
-                                        <label for="{{ form.end_time.id_for_label }}" class="form-label">
-                                            <i class="fas fa-stop me-1"></i>End Time
-                                        </label>
-                                        {{ form.end_time }}
-                                        <div class="form-text">Format: MM:SS or HH:MM:SS (e.g., 5:00 or 0:05:00)</div>
-                                        {% if form.end_time.errors %}
-                                            <div class="text-danger mt-1">
-                                                {% for error in form.end_time.errors %}
-                                                    <small>{{ error }}</small>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-magic me-2"></i>Extract Audio
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Extraction Results -->
-            {% if extraction_result %}
-                {% if extraction_result.success %}
-                    <div class="card shadow-lg border-0 mb-4">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-check-circle me-2"></i>Audio Extraction Complete
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-bold text-muted">Video File Info:</h6>
-                                    <ul class="list-unstyled">
-                                        <li><strong>Duration:</strong> {{ extraction_result.video_info.duration|floatformat:2 }}s</li>
-                                        <li><strong>Frame Rate:</strong> {{ extraction_result.video_info.fps|floatformat:1 }} fps</li>
-                                        <li><strong>Resolution:</strong> {{ extraction_result.video_info.size.0 }}x{{ extraction_result.video_info.size.1 }}</li>
-                                        <li><strong>Has Audio:</strong> 
-                                            {% if extraction_result.video_info.has_audio %}
-                                                <span class="text-success"><i class="fas fa-check"></i> Yes</span>
-                                            {% else %}
-                                                <span class="text-danger"><i class="fas fa-times"></i> No</span>
-                                            {% endif %}
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-bold text-muted">Extracted Audio Info:</h6>
-                                    <ul class="list-unstyled">
-                                        <li><strong>Format:</strong> {{ extraction_result.audio_info.format }}</li>
-                                        <li><strong>Duration:</strong> {{ extraction_result.audio_info.duration|floatformat:2 }}s</li>
-                                        <li><strong>Quality:</strong> {{ extraction_result.audio_info.quality }}</li>
-                                        <li><strong>File Size:</strong> {{ extraction_result.audio_info.size|filesizeformat }}</li>
-                                        {% if extraction_result.start_time %}
-                                            <li><strong>Start Time:</strong> {{ extraction_result.start_time }}</li>
-                                        {% endif %}
-                                        {% if extraction_result.end_time %}
-                                            <li><strong>End Time:</strong> {{ extraction_result.end_time }}</li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <a href="data:audio/{{ extraction_result.audio_info.format|lower }};base64,{{ extraction_result.audio_data }}" 
-                                   download="{{ extraction_result.filename }}" 
-                                   class="btn btn-success btn-lg me-3">
-                                    <i class="fas fa-download me-2"></i>Download Extracted Audio
-                                </a>
-                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
-                                    <i class="fas fa-redo me-2"></i>Extract Another
-                                </button>
-                            </div>
                         </div>
                     </div>
-                {% else %}
-                    <div class="alert alert-danger">
-                        <h5 class="alert-heading">
-                            <i class="fas fa-exclamation-circle me-2"></i>Extraction Failed
-                        </h5>
-                        <p class="mb-0">{{ extraction_result.error }}</p>
-                    </div>
-                {% endif %}
-            {% endif %}
 
-            <!-- Features & Information -->
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">
-                                <i class="fas fa-info-circle me-2"></i>Supported Video Formats
-                            </h5>
-                            <div class="row">
-                                <div class="col-6">
-                                    <ul class="list-unstyled">
-                                        <li><i class="fas fa-check text-success me-2"></i>MP4</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>AVI</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>MKV</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>MOV</li>
-                                    </ul>
-                                </div>
-                                <div class="col-6">
-                                    <ul class="list-unstyled">
-                                        <li><i class="fas fa-check text-success me-2"></i>WMV</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>FLV</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>WEBM</li>
-                                        <li><i class="fas fa-check text-success me-2"></i>3GP</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">
-                                <i class="fas fa-cogs me-2"></i>Audio Quality Options
-                            </h5>
-                            <ul class="list-unstyled">
-                                <li><strong>96 kbps:</strong> Low quality, small file</li>
-                                <li><strong>128 kbps:</strong> Standard quality</li>
-                                <li><strong>192 kbps:</strong> High quality (recommended)</li>
-                                <li><strong>256 kbps:</strong> Very high quality</li>
-                                <li><strong>320 kbps:</strong> Maximum quality</li>
-                            </ul>
-                        </div>
+                    <div class="text-center space-x-4">
+                        <a href="data:audio/{{ extraction_result.audio_info.format|lower }};base64,{{ extraction_result.audio_data }}" 
+                           download="{{ extraction_result.filename }}" 
+                           class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Download Extracted Audio
+                        </a>
+                        <button type="button" onclick="resetForm()" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                            Extract Another
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Use Cases & Tips -->
-            <div class="card border-0 bg-light">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">
-                        <i class="fas fa-lightbulb me-2"></i>Common Use Cases & Tips
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Content Creation</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Extract music from videos</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Create podcasts from recordings</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Audio-only versions</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Learning & Study</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Convert lectures to audio</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Extract specific segments</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Create audio notes</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-bold">Pro Tips</h6>
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Use MP3 for general use</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>WAV for lossless quality</li>
-                                <li><i class="fas fa-arrow-right text-primary me-2"></i>Set time range for clips</li>
-                            </ul>
-                        </div>
+        {% else %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-800">Extraction Failed</h3>
+                        <p class="text-red-700">{{ extraction_result.error }}</p>
                     </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 
-                    <div class="alert alert-info mt-4">
-                        <h6 class="alert-heading">
-                            <i class="fas fa-info-circle me-2"></i>Time Format Examples
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li><strong>1:30</strong> = 1 minute 30 seconds</li>
-                                    <li><strong>0:01:30</strong> = 1 minute 30 seconds</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li><strong>5:00</strong> = 5 minutes</li>
-                                    <li><strong>1:05:30</strong> = 1 hour 5 minutes 30 seconds</li>
-                                </ul>
-                            </div>
-                        </div>
+    <!-- Features & Information -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-indigo-600 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                Supported Video Formats
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>MP4</span>
                     </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>AVI</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>MKV</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>MOV</span>
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>WMV</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>FLV</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>WEBM</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>3GP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-indigo-600 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Audio Quality Options
+            </h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>96 kbps:</strong> Low quality, small file</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>128 kbps:</strong> Standard quality</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>192 kbps:</strong> High quality (recommended)</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>256 kbps:</strong> Very high quality</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span><strong>320 kbps:</strong> Maximum quality</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use Cases & Tips -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+        <h3 class="text-lg font-semibold text-indigo-600 mb-6 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            Common Use Cases & Tips
+        </h3>
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Content Creation</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Extract music from videos</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Create podcasts from recordings</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Audio-only versions</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Learning & Study</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Convert lectures to audio</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Extract specific segments</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Create audio notes</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Pro Tips</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Use MP3 for general use</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>WAV for lossless quality</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Set time range for clips</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="text-base font-semibold text-blue-800 mb-3 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                Time Format Examples
+            </h4>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div class="space-y-1">
+                    <div><strong>1:30</strong> = 1 minute 30 seconds</div>
+                    <div><strong>0:01:30</strong> = 1 minute 30 seconds</div>
+                </div>
+                <div class="space-y-1">
+                    <div><strong>5:00</strong> = 5 minutes</div>
+                    <div><strong>1:05:30</strong> = 1 hour 5 minutes 30 seconds</div>
                 </div>
             </div>
         </div>
@@ -297,20 +487,119 @@ function resetForm() {
     window.location.href = window.location.pathname;
 }
 
-// Time format validation and helper
+// Enhanced file handling and form interactions
 document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const dropZone = document.getElementById('drop-zone');
+    const form = document.getElementById('videoToAudioForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
     const timeInputs = document.querySelectorAll('input[name="start_time"], input[name="end_time"]');
     
+    // File input change handler
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const size = (file.size / (1024 * 1024)).toFixed(2);
+                
+                if (file.size > 500 * 1024 * 1024) { // 500MB limit
+                    alert('File size exceeds 500MB limit. Please choose a smaller file.');
+                    e.target.value = '';
+                    return;
+                }
+                
+                updateDropZoneText(`Selected: ${file.name} (${size}MB)`);
+            }
+        });
+    }
+    
+    // Drag and drop functionality
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('border-indigo-500', 'bg-indigo-50');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+            });
+        });
+        
+        dropZone.addEventListener('drop', handleDrop);
+    }
+    
+    // Time format validation and helper
     timeInputs.forEach(input => {
         input.addEventListener('blur', function(e) {
             const value = e.target.value.trim();
             if (value && !isValidTimeFormat(value)) {
                 e.target.setCustomValidity('Please use format MM:SS or HH:MM:SS');
+                e.target.classList.add('border-red-500');
             } else {
                 e.target.setCustomValidity('');
+                e.target.classList.remove('border-red-500');
+            }
+        });
+        
+        // Real-time validation feedback
+        input.addEventListener('input', function(e) {
+            const value = e.target.value.trim();
+            if (value && !isValidTimeFormat(value)) {
+                e.target.classList.add('border-orange-400');
+            } else {
+                e.target.classList.remove('border-orange-400');
             }
         });
     });
+    
+    // Form submission with loading state
+    if (form && submitBtn) {
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Extracting Audio...
+            `;
+        });
+    }
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.size > 500 * 1024 * 1024) { // 500MB limit
+                alert('File size exceeds 500MB limit. Please choose a smaller file.');
+                return;
+            }
+            
+            fileInput.files = files;
+            const size = (file.size / (1024 * 1024)).toFixed(2);
+            updateDropZoneText(`Selected: ${file.name} (${size}MB)`);
+        }
+    }
+    
+    function updateDropZoneText(text) {
+        const textEl = dropZone.querySelector('span');
+        if (textEl) {
+            textEl.textContent = text;
+        }
+    }
 });
 
 function isValidTimeFormat(time) {
@@ -318,24 +607,5 @@ function isValidTimeFormat(time) {
     const timeRegex = /^(\d{1,2}):([0-5]\d)$|^(\d{1,2}):([0-5]\d):([0-5]\d)$/;
     return timeRegex.test(time);
 }
-
-// File size display
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const size = (file.size / (1024 * 1024)).toFixed(2);
-                console.log(`Video file size: ${size}MB`);
-                
-                if (file.size > 500 * 1024 * 1024) { // 500MB limit
-                    alert('File size exceeds 500MB limit. Please choose a smaller file.');
-                    e.target.value = '';
-                }
-            }
-        });
-    }
-});
 </script>
 {% endblock %}

@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Get Help with Free Online Tools | Toolbox{% endblock %}
+
+{% block description %}Contact our support team for help with our free online tools. Get assistance with file conversion, image processing, and other utility tools. We're here to help!{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Contact Us
+        </h1>
+        <p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+            Have questions about our tools? Need technical support? Want to suggest a new feature? 
+            We'd love to hear from you!
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-12">
+        <!-- Contact Form -->
+        <div class="bg-white rounded-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            First Name *
+                        </label>
+                        <input type="text" id="first_name" name="first_name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Your first name">
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Last Name *
+                        </label>
+                        <input type="text" id="last_name" name="last_name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Your last name">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address *
+                    </label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="your.email@example.com">
+                </div>
+                
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                        Subject *
+                    </label>
+                    <select id="subject" name="subject" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Please select a subject</option>
+                        <option value="technical_support">Technical Support</option>
+                        <option value="feature_request">Feature Request</option>
+                        <option value="bug_report">Bug Report</option>
+                        <option value="general_inquiry">General Inquiry</option>
+                        <option value="partnership">Partnership Opportunity</option>
+                        <option value="feedback">Feedback</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="tool_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Related Tool (if applicable)
+                    </label>
+                    <input type="text" id="tool_name" name="tool_name"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="e.g., File Converter, Image Compressor">
+                </div>
+                
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                        Message *
+                    </label>
+                    <textarea id="message" name="message" rows="6" required
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-y"
+                              placeholder="Please describe your question, issue, or feedback in detail. The more information you provide, the better we can help you."></textarea>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="privacy_agree" name="privacy_agree" required
+                           class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="privacy_agree" class="text-sm text-gray-600">
+                        I agree to the <a href="{% url 'tool_app:privacy_policy' %}" class="text-blue-600 hover:text-blue-800 underline">Privacy Policy</a> 
+                        and consent to being contacted regarding my inquiry. *
+                    </label>
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800">
+                    <strong>Response Time:</strong> We typically respond within 24-48 hours during business days. 
+                    For urgent technical issues, please include detailed steps to reproduce the problem.
+                </p>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="space-y-8">
+            <!-- Contact Info Cards -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Get in Touch</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 text-blue-600 mt-1">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Email Support</p>
+                            <p class="text-gray-600">support@toolbox-project.com</p>
+                            <p class="text-sm text-gray-500 mt-1">For technical support and general inquiries</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 text-green-600 mt-1">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Feature Requests</p>
+                            <p class="text-gray-600">features@toolbox-project.com</p>
+                            <p class="text-sm text-gray-500 mt-1">Suggest new tools and improvements</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 text-red-600 mt-1">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Bug Reports</p>
+                            <p class="text-gray-600">bugs@toolbox-project.com</p>
+                            <p class="text-sm text-gray-500 mt-1">Report technical issues and errors</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 text-purple-600 mt-1">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Business Inquiries</p>
+                            <p class="text-gray-600">business@toolbox-project.com</p>
+                            <p class="text-sm text-gray-500 mt-1">Partnerships and business opportunities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Frequently Asked Questions</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Are your tools really free?</h4>
+                        <p class="text-sm text-gray-600">Yes! All our tools are completely free to use with no hidden fees or subscriptions.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Do I need to create an account?</h4>
+                        <p class="text-sm text-gray-600">No registration required! You can use most tools immediately without creating an account.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Is my data secure?</h4>
+                        <p class="text-sm text-gray-600">Yes, we process files securely and don't store your data unnecessarily. Files are processed temporarily and then deleted.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">What file formats do you support?</h4>
+                        <p class="text-sm text-gray-600">We support a wide range of formats including PDF, Word, images (JPG, PNG, etc.), audio, and video files.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Can I suggest new tools?</h4>
+                        <p class="text-sm text-gray-600">Absolutely! Use the form to suggest new features or email us at features@toolbox-project.com.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-gray-500">
+                        Still have questions? Don't hesitate to contact us using the form above!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Response Time Info -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+                <h3 class="text-lg font-semibold mb-3">Our Commitment</h3>
+                <ul class="space-y-2 text-sm opacity-95">
+                    <li class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span>24-48 hour response time during business days</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span>Detailed technical support when needed</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span>Consideration of all feature requests</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                        <span>Friendly, helpful customer service</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Form validation and user experience improvements
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitButton = document.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        // Basic client-side validation feedback
+        const requiredFields = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let allValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                allValid = false;
+                field.classList.add('border-red-300');
+            } else {
+                field.classList.remove('border-red-300');
+            }
+        });
+        
+        if (!allValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        // Show loading state
+        submitButton.innerHTML = 'Sending...';
+        submitButton.disabled = true;
+    });
+    
+    // Email validation
+    const emailField = document.getElementById('email');
+    emailField.addEventListener('blur', function() {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (this.value && !emailRegex.test(this.value)) {
+            this.classList.add('border-red-300');
+        } else {
+            this.classList.remove('border-red-300');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

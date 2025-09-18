@@ -39,6 +39,14 @@ urlpatterns = [
     path('result/<int:pk>/', views.conversion_result, name='conversion_result'),
     path('download/<int:pk>/', views.download_file, name='download_file'),
     
+    # Static Pages
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms/', views.terms, name='terms'),
+    path('disclaimer/', views.disclaimer, name='disclaimer'),
+    path('blog/', views.blog, name='blog'),
+    
     # API endpoints
     path('api/convert/', views.api_convert_file, name='api_convert_file'),
     path('api/text-to-pdf/', views.api_text_to_pdf, name='api_text_to_pdf'),
