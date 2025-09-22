@@ -2089,7 +2089,7 @@ def contact(request):
         messages.success(request, 'Thank you for your message! We will get back to you soon.')
         return redirect('tool_app:contact')
     
-    return render(request, 'tool_app/contact_us.html')
+    return render(request, 'tool_app/contact.html')
 
 
 def privacy_policy(request):
