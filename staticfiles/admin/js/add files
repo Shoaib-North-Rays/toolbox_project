@@ -1,0 +1,16 @@
+var atOptions = {
+    'key' : '8bd4fcf9bdec4d82ef55d169c0128bd2',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+};
+
+(function() {
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = '//www.highperformanceformat.com/8bd4fcf9bdec4d82ef55d169c0128bd2/invoke.js';
+    s.async = true;
+    document.write('<div id="ad-container" style="width:320px;height:50px;margin:auto;"></div>');
+    document.getElementById('ad-container').appendChild(s);
+})();
