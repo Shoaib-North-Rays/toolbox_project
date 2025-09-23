@@ -1,19 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Toolbox - Professional Online Tools{% endblock %}
+{% block title %}All in One Tools - Free Online Utilities | File Converter, Image Tools & More{% endblock %}
 
-{% block description %}Professional online tools for file conversion, image processing, text manipulation, and more. Fast, secure, and easy to use.{% endblock %}
+{% block description %}Free online tools for file conversion, image compression, QR codes, text encryption, hash generation, and more. Professional utilities at allinonetools.fun - fast, secure, and easy to use.{% endblock %}
+
+{% block keywords %}all in one tools, free online tools, file converter, image compressor, QR code generator, hash generator, text tools, pdf converter, URL encoder, SSL checker{% endblock %}
+
+{% block og_title %}All in One Tools - Free Professional Online Utilities{% endblock %}
+
+{% block og_description %}Access 20+ free online tools for file conversion, image processing, text manipulation, security utilities, and more. No registration required.{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
     <!-- Hero Section -->
     <div class="text-center py-12">
         <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            🧰 Welcome to <span class="text-blue-600">Toolbox</span>
+            🛠️ Welcome to <span class="text-blue-600">All in One Tools</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Professional online tools for file conversion, text processing, and more. 
-            Fast, secure, and completely free to use.
+            Professional free online utilities for file conversion, image processing, text manipulation, and more. 
+            Fast, secure, and completely free to use at allinonetools.fun
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="{% url 'tool_app:file_converter' %}" 

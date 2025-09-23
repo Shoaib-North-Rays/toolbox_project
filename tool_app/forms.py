@@ -1,5 +1,5 @@
 from django import forms
-from .models import FileConversion
+from .models import FileConversion, Newsletter
 
 
 class FileUploadForm(forms.ModelForm):
@@ -20,6 +20,13 @@ class FileUploadForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Filter conversion types to only show file conversion options
+        self.fields['conversion_type'].choices = [
+            ('txt_to_pdf', 'Text to PDF'),
+            ('pdf_to_txt', 'PDF to Text'),
+            ('doc_to_pdf', 'DOC to PDF'),
+            ('pdf_to_doc', 'PDF to DOC'),
+        ]
         self.fields['original_file'].label = 'Select File'
         self.fields['conversion_type'].label = 'Conversion Type'
         self.fields['original_file'].help_text = 'Supported formats: TXT, PDF, DOC, DOCX'
@@ -947,3 +954,31 @@ class VideoToAudioForm(forms.Form):
             return hours * 3600 + minutes * 60 + seconds
         else:
             raise ValueError('Invalid time format')
+
+
+class NewsletterForm(forms.ModelForm):
+    """Form for newsletter subscription"""
+    
+    class Meta:
+        model = Newsletter
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'flex-1 px-4 py-3 rounded-l-lg border-0 focus:ring-2 focus:ring-white focus:ring-opacity-50 text-gray-900',
+                'placeholder': 'Enter your email',
+                'required': True
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].label = ''
+        self.fields['email'].help_text = ''
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            # Check if email already exists and is active
+            if Newsletter.objects.filter(email=email, is_active=True).exists():
+                raise forms.ValidationError('This email is already subscribed to our newsletter.')
+        return email

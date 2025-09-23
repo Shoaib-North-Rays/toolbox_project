@@ -17,13 +17,13 @@ import json
 from docx import Document
 from docx.shared import Inches
 
-from .models import FileConversion
+from .models import FileConversion, Newsletter
 from .forms import (
     FileUploadForm, TextToPdfForm, ImageCompressionForm, ImageConversionForm, QRCodeForm,
     MetaTagForm, URLEncoderDecoderForm, DomainResolverForm, WhoisLookupForm, RobotsSitemapForm,
     HashGeneratorForm, JWTDecoderForm, SSLCheckerForm, EmailValidatorForm, TextEncryptionForm,
     MemeGeneratorForm, EmojiTranslatorForm, RandomQuoteForm, RandomNameForm, UnitConverterForm,
-    AudioConverterForm, AudioSpeedChangerForm, VideoToAudioForm
+    AudioConverterForm, AudioSpeedChangerForm, VideoToAudioForm, NewsletterForm
 )
 from PIL import Image, ImageOps
 import qrcode
@@ -57,6 +57,70 @@ except ImportError:
 def home(request):
     """Home page with tool overview"""
     return render(request, 'tool_app/home.html')
+
+
+@csrf_exempt
+@require_POST
+def newsletter_subscribe(request):
+    """Handle newsletter subscription"""
+    try:
+        if request.content_type == 'application/json':
+            # Handle JSON request (AJAX)
+            data = json.loads(request.body)
+            email = data.get('email')
+        else:
+            # Handle form submission
+            email = request.POST.get('email')
+        
+        if not email:
+            return JsonResponse({'error': 'Email is required'}, status=400)
+        
+        # Get client info
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+        if ip_address:
+            ip_address = ip_address.split(',')[0].strip()
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+        
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        
+        # Check if email already exists and is active
+        existing = Newsletter.objects.filter(email=email).first()
+        
+        if existing:
+            if existing.is_active:
+                return JsonResponse({
+                    'error': 'This email is already subscribed to our newsletter.'
+                }, status=400)
+            else:
+                # Reactivate existing subscription
+                existing.is_active = True
+                existing.unsubscribed_at = None
+                existing.ip_address = ip_address
+                existing.user_agent = user_agent
+                existing.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Successfully resubscribed to newsletter!'
+                })
+        else:
+            # Create new subscription
+            Newsletter.objects.create(
+                email=email,
+                ip_address=ip_address,
+                user_agent=user_agent
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Successfully subscribed to newsletter!'
+            })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
 
 
 def file_converter(request):

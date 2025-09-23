@@ -59,3 +59,28 @@ class FileConversion(models.Model):
     @property
     def converted_filename(self):
         return os.path.basename(self.converted_file.name) if self.converted_file else None
+
+
+class Newsletter(models.Model):
+    """Model to store newsletter email subscriptions"""
+    email = models.EmailField(unique=True, help_text="Email address for newsletter subscription")
+    is_active = models.BooleanField(default=True, help_text="Is subscription active")
+    subscribed_at = models.DateTimeField(auto_now_add=True, help_text="Date and time of subscription")
+    unsubscribed_at = models.DateTimeField(blank=True, null=True, help_text="Date and time of unsubscription")
+    ip_address = models.GenericIPAddressField(blank=True, null=True, help_text="IP address of subscriber")
+    user_agent = models.TextField(blank=True, null=True, help_text="User agent of subscriber")
+    
+    class Meta:
+        ordering = ['-subscribed_at']
+        verbose_name = 'Newsletter Subscription'
+        verbose_name_plural = 'Newsletter Subscriptions'
+    
+    def __str__(self):
+        status = "Active" if self.is_active else "Inactive"
+        return f"{self.email} - {status}"
+    
+    def unsubscribe(self):
+        """Unsubscribe from newsletter"""
+        self.is_active = False
+        self.unsubscribed_at = timezone.now()
+        self.save()

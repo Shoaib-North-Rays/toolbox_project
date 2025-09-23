@@ -51,4 +51,5 @@ urlpatterns = [
     path('api/convert/', views.api_convert_file, name='api_convert_file'),
     path('api/text-to-pdf/', views.api_text_to_pdf, name='api_text_to_pdf'),
     path('api/status/<int:pk>/', views.api_conversion_status, name='api_conversion_status'),
+    path('api/newsletter-subscribe/', views.newsletter_subscribe, name='newsletter_subscribe'),
 ]

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,16 +7,37 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
     <!-- SEO Meta Tags -->
-    <title>{% block title %}Toolbox - Online Tools{% endblock %}</title>
-    <meta name="description" content="{% block description %}Professional online tools for file conversion, image processing, and more. Fast, secure, and easy to use.{% endblock %}">
-    <meta name="keywords" content="online tools, file converter, image compressor, pdf tools, text tools">
-    <meta name="author" content="Toolbox Project">
+    <title>{% block title %}All in One Tools - Free Online Utilities | allinonetools.fun{% endblock %}</title>
+    <meta name="description" content="{% block description %}Professional online tools for file conversion, image processing, QR codes, text encryption, and more. Free, fast, and secure utilities at allinonetools.fun{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}online tools, file converter, image compressor, QR code generator, text tools, free utilities, allinonetools{% endblock %}">
+    <meta name="author" content="All in One Tools">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://allinonetools.fun{{ request.get_full_path }}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{% block og_title %}Toolbox - Online Tools{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Professional online tools for file conversion, image processing, and more.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}All in One Tools - Free Online Utilities{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Professional online tools for file conversion, image processing, and more. Free, fast, and secure utilities.{% endblock %}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:url" content="https://allinonetools.fun{{ request.get_full_path }}">
+    <meta property="og:site_name" content="All in One Tools">
+    <meta property="og:image" content="https://allinonetools.fun/static/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}All in One Tools - Free Online Utilities{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Professional online tools for file conversion, image processing, and more. Free, fast, and secure utilities.{% endblock %}">
+    <meta name="twitter:image" content="https://allinonetools.fun/static/images/og-image.jpg">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" href="{% url 'django.contrib.sitemaps.views.sitemap' %}" title="Sitemap">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -75,8 +97,9 @@
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="{% url 'tool_app:home' %}" class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                        🧰 Toolbox
+                    <a href="{% url 'tool_app:home' %}" class="flex items-center text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                        <img src="{% static 'allinone.png' %}" alt="All in One Tools Logo" class="w-12 h-12 mr-3 object-contain">
+                        All in One Tools
                     </a>
                 </div>
                 <div class="hidden md:block">
@@ -99,51 +122,51 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <!-- File Tools -->
                                         <div class="space-y-2">
-                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">📁 File Tools</h3>
+                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">File Tools</h3>
                                             <a href="{% url 'tool_app:file_converter' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                📄 File Converter
+                                                File Converter
                                             </a>
                                             <a href="{% url 'tool_app:text_to_pdf' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                📝 Text to PDF
+                                                Text to PDF
                                             </a>
                                         </div>
                                         
                                         <!-- Image Tools -->
                                         <div class="space-y-2">
-                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">🖼️ Image Tools</h3>
+                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">Image Tools</h3>
                                             <a href="{% url 'tool_app:image_compression' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🗜️ Image Compressor
+                                                Image Compressor
                                             </a>
                                             <a href="{% url 'tool_app:image_conversion' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🔄 Image Converter
+                                                Image Converter
                                             </a>
                                         </div>
                                         
                                         <!-- Web & SEO Tools -->
                                         <div class="space-y-2">
-                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">🌐 Web & SEO</h3>
+                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">Web & SEO</h3>
                                             <a href="{% url 'tool_app:qr_code_generator' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                📱 QR Generator
+                                                QR Generator
                                             </a>
                                             <a href="{% url 'tool_app:meta_tag_generator' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🏷️ Meta Tags
+                                                Meta Tags
                                             </a>
                                             <a href="{% url 'tool_app:url_encoder_decoder' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🔗 URL Encoder
+                                                URL Encoder
                                             </a>
                                         </div>
                                         
                                         <!-- Security Tools -->
                                         <div class="space-y-2">
-                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">🔒 Security</h3>
+                                            <h3 class="text-sm font-semibold text-gray-900 mb-2">Security</h3>
                                             <a href="{% url 'tool_app:hash_generator' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                #️⃣ Hash Generator
+                                                Hash Generator
                                             </a>
                                             <a href="{% url 'tool_app:jwt_decoder' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🔐 JWT Decoder
+                                                JWT Decoder
                                             </a>
                                             <a href="{% url 'tool_app:ssl_checker' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                                🛡️ SSL Checker
+                                                SSL Checker
                                             </a>
                                         </div>
                                     </div>
@@ -171,26 +194,17 @@
                             <div class="absolute right-0 lg:left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <div class="p-4">
                                     <div class="space-y-2">
-                                        <a href="{% url 'tool_app:blog' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">📝</span>
-                                            <div>
-                                                <div class="font-medium">Blog</div>
-                                                <div class="text-xs text-gray-400">Tips and guides</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:blog' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">Blog</div>
+                                            <div class="text-xs text-gray-400">Tips and guides</div>
                                         </a>
-                                        <a href="{% url 'tool_app:about' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">ℹ️</span>
-                                            <div>
-                                                <div class="font-medium">About Us</div>
-                                                <div class="text-xs text-gray-400">Our mission</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:about' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">About Us</div>
+                                            <div class="text-xs text-gray-400">Our mission</div>
                                         </a>
-                                        <a href="{% url 'tool_app:contact' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">📞</span>
-                                            <div>
-                                                <div class="font-medium">Contact</div>
-                                                <div class="text-xs text-gray-400">Get support</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:contact' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">Contact</div>
+                                            <div class="text-xs text-gray-400">Get support</div>
                                         </a>
                                     </div>
                                 </div>
@@ -209,26 +223,17 @@
                             <div class="absolute right-0 lg:left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <div class="p-4">
                                     <div class="space-y-2">
-                                        <a href="{% url 'tool_app:privacy_policy' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">🔒</span>
-                                            <div>
-                                                <div class="font-medium">Privacy Policy</div>
-                                                <div class="text-xs text-gray-400">Data protection</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:privacy_policy' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">Privacy Policy</div>
+                                            <div class="text-xs text-gray-400">Data protection</div>
                                         </a>
-                                        <a href="{% url 'tool_app:terms' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">📋</span>
-                                            <div>
-                                                <div class="font-medium">Terms & Conditions</div>
-                                                <div class="text-xs text-gray-400">User agreement</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:terms' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">Terms & Conditions</div>
+                                            <div class="text-xs text-gray-400">User agreement</div>
                                         </a>
-                                        <a href="{% url 'tool_app:disclaimer' %}" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                                            <span class="mr-3">⚠️</span>
-                                            <div>
-                                                <div class="font-medium">Disclaimer</div>
-                                                <div class="text-xs text-gray-400">Important info</div>
-                                            </div>
+                                        <a href="{% url 'tool_app:disclaimer' %}" class="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                            <div class="font-medium">Disclaimer</div>
+                                            <div class="text-xs text-gray-400">Important info</div>
                                         </a>
                                     </div>
                                 </div>
@@ -251,8 +256,7 @@
         <!-- Mobile menu -->
         <div id="mobile-menu" class="md:hidden hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 max-h-screen overflow-y-auto">
             <div class="px-4 py-4 space-y-2">
-                <a href="{% url 'tool_app:home' %}" class="flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
-                    <span class="text-lg mr-3">🏠</span>
+                <a href="{% url 'tool_app:home' %}" class="text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors block">
                     Home
                 </a>
                 
@@ -260,7 +264,6 @@
                 <div>
                     <button id="mobile-tools-toggle" class="flex items-center justify-between w-full text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
                         <div class="flex items-center">
-                            <span class="text-lg mr-3">🛠️</span>
                             Tools
                         </div>
                         <svg class="h-5 w-5 transform transition-transform" id="mobile-tools-arrow" fill="currentColor" viewBox="0 0 20 20">
@@ -268,49 +271,39 @@
                         </svg>
                     </button>
                     <div id="mobile-tools-menu" class="hidden mt-1 ml-6 pl-4 border-l-2 border-gray-100 space-y-1">
-                        <a href="{% url 'tool_app:file_converter' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">📄</span>
-                            <span class="truncate">File Converter</span>
+                        <a href="{% url 'tool_app:file_converter' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            File Converter
                         </a>
-                        <a href="{% url 'tool_app:text_to_pdf' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">📝</span>
-                            <span class="truncate">Text to PDF</span>
+                        <a href="{% url 'tool_app:text_to_pdf' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Text to PDF
                         </a>
-                        <a href="{% url 'tool_app:image_compression' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">🗜️</span>
-                            <span class="truncate">Image Compressor</span>
+                        <a href="{% url 'tool_app:image_compression' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Image Compressor
                         </a>
-                        <a href="{% url 'tool_app:image_conversion' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">🔄</span>
-                            <span class="truncate">Image Converter</span>
+                        <a href="{% url 'tool_app:image_conversion' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Image Converter
                         </a>
-                        <a href="{% url 'tool_app:qr_code_generator' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">📱</span>
-                            <span class="truncate">QR Generator</span>
+                        <a href="{% url 'tool_app:qr_code_generator' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            QR Generator
                         </a>
-                        <a href="{% url 'tool_app:meta_tag_generator' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">🏷️</span>
-                            <span class="truncate">Meta Tags</span>
+                        <a href="{% url 'tool_app:meta_tag_generator' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Meta Tags
                         </a>
-                        <a href="{% url 'tool_app:hash_generator' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">#️⃣</span>
-                            <span class="truncate">Hash Generator</span>
+                        <a href="{% url 'tool_app:hash_generator' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Hash Generator
                         </a>
                     </div>
                 </div>
                 
-                <a href="{% url 'tool_app:blog' %}" class="flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
-                    <span class="text-lg mr-3">📝</span>
+                <a href="{% url 'tool_app:blog' %}" class="text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors block">
                     Blog
                 </a>
                 
-                <a href="{% url 'tool_app:about' %}" class="flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
-                    <span class="text-lg mr-3">ℹ️</span>
+                <a href="{% url 'tool_app:about' %}" class="text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors block">
                     About
                 </a>
                 
-                <a href="{% url 'tool_app:contact' %}" class="flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
-                    <span class="text-lg mr-3">📞</span>
+                <a href="{% url 'tool_app:contact' %}" class="text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors block">
                     Contact
                 </a>
                 
@@ -318,7 +311,6 @@
                 <div>
                     <button id="mobile-legal-toggle" class="flex items-center justify-between w-full text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-3 rounded-lg text-base font-medium transition-colors">
                         <div class="flex items-center">
-                            <span class="text-lg mr-3">⚖️</span>
                             Legal
                         </div>
                         <svg class="h-5 w-5 transform transition-transform" id="mobile-legal-arrow" fill="currentColor" viewBox="0 0 20 20">
@@ -326,17 +318,14 @@
                         </svg>
                     </button>
                     <div id="mobile-legal-menu" class="hidden mt-1 ml-6 pl-4 border-l-2 border-gray-100 space-y-1">
-                        <a href="{% url 'tool_app:privacy_policy' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">🔒</span>
-                            <span class="truncate">Privacy Policy</span>
+                        <a href="{% url 'tool_app:privacy_policy' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Privacy Policy
                         </a>
-                        <a href="{% url 'tool_app:terms' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">📋</span>
-                            <span class="truncate">Terms & Conditions</span>
+                        <a href="{% url 'tool_app:terms' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Terms & Conditions
                         </a>
-                        <a href="{% url 'tool_app:disclaimer' %}" class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                            <span class="mr-2">⚠️</span>
-                            <span class="truncate">Disclaimer</span>
+                        <a href="{% url 'tool_app:disclaimer' %}" class="block px-3 py-2 text-sm text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                            Disclaimer
                         </a>
                     </div>
                 </div>
@@ -364,41 +353,145 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t mt-auto">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8 mb-6">
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Tools</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="{% url 'tool_app:file_converter' %}" class="hover:text-gray-900">File Converter</a></li>
-                        <li><a href="{% url 'tool_app:image_compression' %}" class="hover:text-gray-900">Image Compressor</a></li>
-                        <li><a href="{% url 'tool_app:qr_code_generator' %}" class="hover:text-gray-900">QR Code Generator</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Company</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="{% url 'tool_app:about' %}" class="hover:text-gray-900">About Us</a></li>
-                        <li><a href="{% url 'tool_app:blog' %}" class="hover:text-gray-900">Blog</a></li>
-                        <li><a href="{% url 'tool_app:contact' %}" class="hover:text-gray-900">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Legal</h3>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="{% url 'tool_app:privacy_policy' %}" class="hover:text-gray-900">Privacy Policy</a></li>
-                        <li><a href="{% url 'tool_app:terms' %}" class="hover:text-gray-900">Terms & Conditions</a></li>
-                        <li><a href="{% url 'tool_app:disclaimer' %}" class="hover:text-gray-900">Disclaimer</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Connect</h3>
-                    <p class="text-sm text-gray-600 mb-2">Free online tools for everyone</p>
-                    <p class="text-sm text-gray-600">support@toolbox-project.com</p>
+    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white mt-auto">
+        <!-- Newsletter Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-white mb-2">Stay Updated</h3>
+                    <p class="text-blue-100 mb-6 max-w-2xl mx-auto">Get notified about new tools and features. Join thousands of users who love our free online utilities.</p>
+                    <div class="max-w-md mx-auto">
+                        <form id="newsletter-form" class="flex">
+                            {% csrf_token %}
+                            <input type="email" name="email" id="newsletter-email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-l-lg border-0 focus:ring-2 focus:ring-white focus:ring-opacity-50 text-gray-900" required>
+                            <button type="submit" id="newsletter-btn" class="bg-white text-blue-600 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition-colors duration-200 focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                                <span class="newsletter-btn-text">Subscribe</span>
+                                <span class="newsletter-btn-loading hidden">Subscribing...</span>
+                            </button>
+                        </form>
+                        <div id="newsletter-message" class="mt-2 text-center hidden">
+                            <p class="text-sm"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-200 pt-4 text-center text-gray-500 text-sm">
-                <p>&copy; 2024 Toolbox Project. All rights reserved. Built with Django & Tailwind CSS.</p>
+        </div>
+        
+        <!-- Main Footer Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-8">
+                <!-- Brand Section -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <img src="{% static 'allinone.png' %}" alt="All in One Tools Logo" class="w-12 h-12 mr-3 object-contain filter brightness-0 invert">
+                        <span class="text-xl font-bold text-white">All in One Tools</span>
+                    </div>
+                    <p class="text-gray-300 mb-4 leading-relaxed">Professional online utilities that are fast, secure, and completely free. Convert files, compress images, generate QR codes, and much more.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Twitter">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Facebook">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="LinkedIn">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="GitHub">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Popular Tools -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Popular Tools</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'tool_app:file_converter' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">File Converter</a></li>
+                        <li><a href="{% url 'tool_app:image_compression' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Image Compressor</a></li>
+                        <li><a href="{% url 'tool_app:qr_code_generator' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">QR Generator</a></li>
+                        <li><a href="{% url 'tool_app:hash_generator' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Hash Generator</a></li>
+                        <li><a href="{% url 'tool_app:text_encryption' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Text Encryption</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Security Tools -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Security</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'tool_app:ssl_checker' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">SSL Checker</a></li>
+                        <li><a href="{% url 'tool_app:jwt_decoder' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">JWT Decoder</a></li>
+                        <li><a href="{% url 'tool_app:email_validator' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Email Validator</a></li>
+                        <li><a href="{% url 'tool_app:domain_ip_resolver' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">IP Resolver</a></li>
+                        <li><a href="{% url 'tool_app:whois_lookup' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">WHOIS Lookup</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'tool_app:about' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">About Us</a></li>
+                        <li><a href="{% url 'tool_app:blog' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Blog</a></li>
+                        <li><a href="{% url 'tool_app:contact' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Legal</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'tool_app:privacy_policy' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</a></li>
+                        <li><a href="{% url 'tool_app:terms' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Terms of Service</a></li>
+                        <li><a href="{% url 'tool_app:disclaimer' %}" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Disclaimer</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Support</h4>
+                    <div class="space-y-3">
+                        <div class="text-sm text-gray-300">
+                            <a href="mailto:support@allinonetools.fun" class="hover:text-white transition-colors duration-200">
+                                support@allinonetools.fun
+                            </a>
+                        </div>
+                        <div class="text-sm text-gray-300">
+                            <span>Available 24/7 worldwide</span>
+                        </div>
+                        <div class="text-sm text-gray-300">
+                            <span>Free & Secure Processing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="bg-gray-900 border-t border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+                    <div class="text-sm text-gray-400 text-center sm:text-left">
+                        <p>&copy; 2024 All in One Tools. All rights reserved.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                            <span>Service Online</span>
+                        </div>
+                        <a href="/sitemap.xml" class="text-gray-400 hover:text-white transition-colors duration-200 text-sm">
+                            Sitemap
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -492,6 +585,77 @@
                     // Optional: Add any cleanup if needed
                 }, 100);
             });
+        });
+        
+        // Newsletter subscription form
+        document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const emailInput = document.getElementById('newsletter-email');
+            const submitBtn = document.getElementById('newsletter-btn');
+            const btnText = submitBtn.querySelector('.newsletter-btn-text');
+            const btnLoading = submitBtn.querySelector('.newsletter-btn-loading');
+            const messageDiv = document.getElementById('newsletter-message');
+            const messageParagraph = messageDiv.querySelector('p');
+            
+            // Validate email
+            const email = emailInput.value.trim();
+            if (!email) {
+                showNewsletterMessage('Please enter your email address.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+            messageDiv.classList.add('hidden');
+            
+            // Submit form via AJAX
+            fetch('{% url "tool_app:newsletter_subscribe" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNewsletterMessage(data.message, 'success');
+                    emailInput.value = '';
+                } else {
+                    showNewsletterMessage(data.error || 'An error occurred. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNewsletterMessage('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                // Reset loading state
+                submitBtn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            });
+            
+            function showNewsletterMessage(message, type) {
+                messageParagraph.textContent = message;
+                messageDiv.classList.remove('hidden');
+                
+                if (type === 'success') {
+                    messageParagraph.className = 'text-sm text-green-200';
+                } else {
+                    messageParagraph.className = 'text-sm text-red-200';
+                }
+                
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    messageDiv.classList.add('hidden');
+                }, 5000);
+            }
         });
 
         {% block extra_js %}{% endblock %}
