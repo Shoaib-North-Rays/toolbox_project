@@ -4,7 +4,7 @@ Disallow: /media/private/
 Allow: /
 
 # Sitemap
-Sitemap: https://allinonetools.fun/sitemap.xml
+Sitemap: https://allinonetool.store/sitemap.xml
 
 # Crawl-delay (optional, in seconds)
 Crawl-delay: 1
