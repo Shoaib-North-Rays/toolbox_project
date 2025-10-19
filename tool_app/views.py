@@ -2177,3 +2177,6 @@ def blog(request):
 def task_manager(request):
     """Blog page"""
     return render(request, 'tool_app/task_manager.html')
+def voice_clone(request):
+    """Blog page"""
+    return render(request, 'tool_app/voiceclone.html')
