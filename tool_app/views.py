@@ -2174,3 +2174,6 @@ def disclaimer(request):
 def blog(request):
     """Blog page"""
     return render(request, 'tool_app/blog.html')
+def task_manager(request):
+    """Blog page"""
+    return render(request, 'tool_app/task_manager.html')
