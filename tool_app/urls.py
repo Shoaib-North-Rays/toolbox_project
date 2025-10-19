@@ -47,6 +47,7 @@ urlpatterns = [
     path('disclaimer/', views.disclaimer, name='disclaimer'),
     path('blog/', views.blog, name='blog'),
     path('task_manager/', views.task_manager, name='task_manager'),
+    path('voice_clone/', views.voice_clone, name='voice_clone')
     
     # API endpoints
     path('api/convert/', views.api_convert_file, name='api_convert_file'),
