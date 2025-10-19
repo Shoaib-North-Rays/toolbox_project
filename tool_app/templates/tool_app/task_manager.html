@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Task Manager</title>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(145deg, #0a0f1c, #101e2e);
+      color: #f3f4f6;
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      color: #00ffff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg, #00ffff, #0077ff);
+      border-color: #00ffff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    }
+
+    .tab-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .container {
+      background: rgba(20, 30, 45, 0.85);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .container:hover {
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.25);
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ffff;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 15px #00ffff;
+    }
+
+    .section-title {
+      color: #00ffff;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      padding-bottom: 0.5rem;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      color: #f3f4f6;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.25s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #00ffff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+      background: rgba(0, 255, 255, 0.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="checkbox"] {
+      accent-color: #00ffff;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    #botList {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    #botList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #botList::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    #botList::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .bot-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .bot-item:hover {
+      border-color: #00ffff;
+      background: rgba(0, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .bot-item label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 8px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      color: #00ffff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .filter-btn.active {
+      background: rgba(0, 255, 255, 0.3);
+      border-color: #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .filter-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #00ffff, #0077ff);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    button[type="submit"]:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+    }
+
+    button[type="submit"]:active {
+      transform: scale(0.98);
+    }
+
+    /* Table Styles */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    table thead {
+      background: rgba(0, 255, 255, 0.1);
+      border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+    }
+
+    table th {
+      padding: 12px;
+      text-align: left;
+      color: #00ffff;
+      font-weight: 600;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    table tbody tr {
+      transition: all 0.25s ease;
+    }
+
+    table tbody tr:hover {
+      background: rgba(0, 255, 255, 0.08);
+      border-left: 3px solid #00ffff;
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+
+    .status-completed {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+      border: 1px solid #4caf50;
+    }
+
+    .status-running {
+      background: rgba(0, 150, 255, 0.2);
+      color: #0096ff;
+      border: 1px solid #0096ff;
+    }
+
+    .status-failed {
+      background: rgba(244, 67, 54, 0.2);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .pause-badge {
+      padding: 2px 8px;
+      background: rgba(255, 87, 34, 0.2);
+      color: #ff5722;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      border: 1px solid #ff5722;
+    }
+
+    .loading {
+      text-align: center;
+      color: #94a3b8;
+      padding: 2rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0, 255, 255, 0.2);
+      border-top-color: #00ffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Custom Alert */
+    #customAlert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(20, 30, 45, 0.95);
+      color: #fff;
+      padding: 20px 40px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      z-index: 999;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      animation: fadeIn 0.5s ease, pulse 1s infinite alternate;
+    }
+
+    .success {
+      border: 2px solid #00ffaa;
+      color: #00ffaa;
+      background: rgba(0, 150, 100, 0.25);
+    }
+
+    .error {
+      border: 2px solid #ff5a5a;
+      color: #ff8080;
+      background: rgba(100, 0, 0, 0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -45%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    @keyframes pulse {
+      from { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+      to { box-shadow: 0 0 25px rgba(0,255,255,0.6); }
+    }
+
+    .refresh-btn {
+      padding: 8px 16px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      color: #00ffff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.25s ease;
+      margin-bottom: 1rem;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('create')">➕ Create Task</button>
+    <button class="tab-btn" onclick="switchTab('tasks')">📊 View Tasks</button>
+    <button class="tab-btn" onclick="switchTab('bots')">🤖 Add Child Bots</button>
+  </div>
+
+  <div class="container">
+    <!-- Create Task Tab -->
+    <div id="create" class="tab-content active">
+      <h2>🤖 AI Task Creator</h2>
+
+      <form id="taskForm">
+        <div class="section-title">📋 Task Configuration</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="service">Service</label>
+            <select id="service" required>
+              <option value="">Select Service</option>
+              <option value="instagram">Instagram</option>
+              <option value="twitter">Twitter</option>
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dataPoint">Data Point</label>
+            <select id="dataPoint" required>
+              <option value="">Select Data Point</option>
+              <option value="followers">Followers</option>
+              <option value="likes">Likes</option>
+              <option value="comments">Comments</option>
+              <option value="shares">Shares</option>
+              <option value="engagement">Engagement</option>
+              <option value="login">Login</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label for="endPoint">End Point</label>
+          <input type="text" id="endPoint" placeholder="/api/followers" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="os">Operating System</label>
+            <select id="os" required>
+              <option value="">Select OS</option>
+              <option value="android">Android</option>
+              <option value="browser">Browser</option>
+              <option value="ios">iOS</option>
+              <option value="windows">Windows</option>
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input">Input</label>
+            <input type="text" id="input" placeholder="Optional input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="targets">Targets</label>
+            <input type="text" id="targets" placeholder="Optional targets">
+          </div>
+
+          <div class="form-group">
+            <label for="condition">Condition</label>
+            <input type="text" id="condition" placeholder="Optional condition">
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label for="addData">Additional Data (JSON)</label>
+          <textarea id="addData" placeholder='{"key": "value"}' required></textarea>
+        </div>
+
+        <div class="section-title">⚙️ Task Options</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="repeat">
+              <label for="repeat" style="margin: 0;">Repeat</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="repeatDuration">Repeat Duration</label>
+            <input type="text" id="repeatDuration" placeholder="1m, 1h, 1d" value="1m">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status">
+              <option value="pending">Pending</option>
+              <option value="running">Running</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="retriesCount">Retries Count</label>
+            <input type="number" id="retriesCount" min="0" value="0">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lastStateChanged">Last State Changed At</label>
+            <input type="text" id="lastStateChanged" placeholder="ISO 8601 or leave empty">
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="report">
+              <label for="report" style="margin: 0;">Report</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="paused">
+            <label for="paused" style="margin: 0;">Paused</label>
+          </div>
+        </div>
+
+        <div class="section-title">🤖 Select Bots for Task</div>
+
+        <div class="filter-buttons">
+          <button type="button" class="filter-btn active" onclick="filterBots('all')">All Bots</button>
+          <button type="button" class="filter-btn" onclick="filterBots('first10')">First 10</button>
+          <button type="button" class="filter-btn" onclick="filterBots('next10')">Next 10</button>
+        </div>
+
+        <div id="botList">
+          <p style="text-align:center;color:#94a3b8;">Loading bots...</p>
+        </div>
+
+        <button type="submit">Create Task for Selected Bots</button>
+      </form>
+    </div>
+
+    <!-- View Tasks Tab -->
+    <div id="tasks" class="tab-content">
+      <h2>📊 Tasks Dashboard</h2>
+      <div id="searchUsername" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <input type="text" id="usernameSearch" placeholder="🔍 Search by username..." style="flex: 1; padding: 10px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); color: #f3f4f6; border-radius: 8px; font-family: 'Poppins', sans-serif; outline: none;" onkeyup="filterTasksByUsername()">
+        <button class="refresh-btn" onclick="loadTasks()">🔄 Refresh</button>
+      </div>
+      <div id="tasksContainer" class="loading">
+        <div class="spinner"></div>
+        <p>Loading tasks...</p>
+      </div>
+    </div>
+
+    <!-- Add Child Bots Tab -->
+    <div id="bots" class="tab-content">
+      <h2>🤖 Add Child Bots</h2>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <input type="file" id="csvFile" accept=".csv,text/csv" placeholder="Select CSV file" style="flex: 1; min-width: 200px; padding: 10px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); color: #f3f4f6; border-radius: 8px; font-family: 'Poppins', sans-serif;">
+        <button class="refresh-btn" onclick="downloadCSVTemplate()">📥 Template</button>
+        <button class="refresh-btn" onclick="parseCSV()">📂 Parse CSV</button>
+      </div>
+
+      <div id="csvPreviewArea" style="display: none;">
+        <div class="section-title">📋 Column Mapping</div>
+        <div id="mappingGrid" style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;"></div>
+
+        <div class="section-title">👁️ Preview</div>
+        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
+          <pre id="jsonPreview" style="color: #00ffff; font-size: 0.85rem; margin: 0; white-space: pre-wrap; word-break: break-word;"></pre>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button class="refresh-btn" style="background: linear-gradient(90deg, #00ffff, #0077ff); color: white; flex: 1;" onclick="sendAllBots()">✅ Upload All Bots</button>
+          <button class="refresh-btn" style="flex: 1;" onclick="sendSingleBot()">✅ Upload Preview Only</button>
+        </div>
+
+        <div id="resultLog" style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; padding: 1rem; margin-top: 1.5rem; max-height: 250px; overflow-y: auto; display: none;">
+          <p style="color: #00ffff; font-weight: 600; margin-bottom: 0.5rem;">Upload Results:</p>
+          <div id="logContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // API Configuration
+    const TASKS_URL = "https://95e97e6b6c2f6c12319eddc5373c9ab0.serveo.net/crawl/tasks/";
+    const TASKS_CREATE_URL = "https://95e97e6b6c2f6c12319eddc5373c9ab0.serveo.net/crawl/api/tasks/";
+    const CHILDBOTS_URL = "https://95e97e6b6c2f6c12319eddc5373c9ab0.serveo.net/crawl/childbots/";
+    
+    // Global Variables
+    let allBots = [];
+    let filteredBots = [];
+    let allTasks = [];
+    let currentFilter = 'all';
+    
+    // Bot CSV Variables
+    const API_FIELDS = ['uuid','display_name','device','service','username','password','phone_number','proxy_url','email_address','email_password','auth_code','recovery_email','imap_email_host','imap_email_username','imap_email_password','imap_email_port','is_challenged'];
+    let parsedBotRows = [];
+    let botHeaders = [];
+    let currentBotIndex = 0;
+
+    function downloadCSVTemplate() {
+      const templateHeaders = ['username','password','display_name','service','email_address','phone_number','proxy_url'];
+      const csv = templateHeaders.join(',') + '\n' + 'sample_user,sample_pass,Sample Bot,instagram,bot@example.com,00000000000,http://proxy:port';
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'childbot_template.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function parseCSV() {
+      const file = document.getElementById('csvFile').files[0];
+      if (!file) {
+        showMessage("⚠️ Please select a CSV file.", "error");
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const csv = e.target.result;
+        const lines = csv.split('\n').filter(line => line.trim());
+        if (lines.length < 2) {
+          showMessage("❌ CSV must have header and data rows.", "error");
+          return;
+        }
+
+        botHeaders = lines[0].split(',').map(h => h.trim());
+        parsedBotRows = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.trim());
+          const row = {};
+          botHeaders.forEach((h, idx) => {
+            row[h] = values[idx] || '';
+          });
+          if (Object.values(row).some(v => v)) parsedBotRows.push(row);
+        }
+
+        if (!parsedBotRows.length) {
+          showMessage("❌ No valid data rows found.", "error");
+          return;
+        }
+
+        currentBotIndex = 0;
+        buildBotMappingUI();
+        showMessage(`✅ Loaded ${parsedBotRows.length} bots from CSV`, "success");
+      };
+      reader.readAsText(file);
+    }
+
+    function buildBotMappingUI() {
+      const mappingGrid = document.getElementById('mappingGrid');
+      mappingGrid.innerHTML = '';
+      
+      API_FIELDS.forEach(field => {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.gap = '1rem';
+        wrapper.style.alignItems = 'center';
+
+        const label = document.createElement('label');
+        label.style.width = '150px';
+        label.style.color = '#cbd5e1';
+        label.style.fontSize = '0.95rem';
+        label.textContent = field;
+
+        const select = document.createElement('select');
+        select.style.flex = '1';
+        select.style.padding = '8px 12px';
+        select.style.background = 'rgba(255, 255, 255, 0.05)';
+        select.style.border = '1px solid rgba(0, 255, 255, 0.2)';
+        select.style.color = '#f3f4f6';
+        select.style.borderRadius = '8px';
+        select.style.fontFamily = "'Poppins', sans-serif";
+        select.style.outline = 'none';
+
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = '-- omit --';
+        select.appendChild(emptyOpt);
+
+        botHeaders.forEach(h => {
+          const opt = document.createElement('option');
+          opt.value = h;
+          opt.textContent = h;
+          select.appendChild(opt);
+        });
+
+        select.dataset.field = field;
+        select.addEventListener('change', refreshBotPreview);
+
+        if (botHeaders.includes(field)) {
+          select.value = field;
+        }
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(select);
+        mappingGrid.appendChild(wrapper);
+      });
+
+      document.getElementById('csvPreviewArea').style.display = 'block';
+      refreshBotPreview();
+    }
+
+    function botRowToPayload(row) {
+      const selects = document.querySelectorAll('#mappingGrid select');
+      const payload = {};
+      
+      selects.forEach(sel => {
+        const field = sel.dataset.field;
+        const col = sel.value;
+        if (!col) return;
+        
+        let val = row[col];
+        if (val === undefined || val === '') {
+          if (field === 'uuid') {
+            payload[field] = crypto.randomUUID();
+          }
+          return;
+        }
+
+        if (field === 'is_challenged') {
+          const v = String(val).toLowerCase();
+          payload[field] = (v === 'true' || v === '1' || v === 'yes');
+        } else {
+          payload[field] = val;
+        }
+      });
+
+      if (!payload.uuid) {
+        payload.uuid = crypto.randomUUID();
+      }
+
+      return payload;
+    }
+
+    function refreshBotPreview() {
+      const row = parsedBotRows[currentBotIndex] || {};
+      const payload = botRowToPayload(row);
+      document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
+    }
+
+    async function sendSingleBot() {
+      const payload = botRowToPayload(parsedBotRows[currentBotIndex]);
+      try {
+        const res = await fetch(CHILDBOTS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const resultLog = document.getElementById('resultLog');
+        const logContent = document.getElementById('logContent');
+        resultLog.style.display = 'block';
+
+        if (res.ok) {
+          logContent.innerHTML = `<p style="color: #00ffaa;">✅ Bot uploaded successfully!</p>`;
+          showMessage("✅ Bot uploaded successfully!", "success");
+        } else {
+          logContent.innerHTML = `<p style="color: #ff8080;">❌ Error: ${res.status}</p>`;
+          showMessage("❌ Error uploading bot", "error");
+        }
+      } catch (err) {
+        showMessage("❌ Error: " + err.message, "error");
+      }
+    }
+
+    async function sendAllBots() {
+      const resultLog = document.getElementById('resultLog');
+      const logContent = document.getElementById('logContent');
+      resultLog.style.display = 'block';
+      logContent.innerHTML = '';
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < parsedBotRows.length; i++) {
+        currentBotIndex = i;
+        const payload = botRowToPayload(parsedBotRows[i]);
+        
+        try {
+          const res = await fetch(CHILDBOTS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            successCount++;
+            const entry = document.createElement('p');
+            entry.style.color = '#00ffaa';
+            entry.textContent = `✅ Row ${i + 1}: Success`;
+            logContent.appendChild(entry);
+          } else {
+            failCount++;
+            const entry = document.createElement('p');
+            entry.style.color = '#ff8080';
+            entry.textContent = `❌ Row ${i + 1}: Failed (${res.status})`;
+            logContent.appendChild(entry);
+          }
+        } catch (err) {
+          failCount++;
+          const entry = document.createElement('p');
+          entry.style.color = '#ff8080';
+          entry.textContent = `❌ Row ${i + 1}: Error - ${err.message}`;
+          logContent.appendChild(entry);
+        }
+      }
+
+      const summary = document.createElement('p');
+      summary.style.color = '#00ffff';
+      summary.style.marginTop = '1rem';
+      summary.style.fontWeight = '600';
+      summary.textContent = `Completed: ${successCount} success, ${failCount} failed`;
+      logContent.appendChild(summary);
+
+      showMessage(`✅ Upload complete! ${successCount} success, ${failCount} failed`, "success");
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tabName === 'tasks') {
+        loadTasks();
+      }
+    }
+
+    async function loadChildBots() {
+      const container = document.getElementById("botList");
+      container.innerHTML = "<p style='text-align:center;color:#94a3b8;'>Loading bots...</p>";
+
+      try {
+        const res = await fetch(`${CHILDBOTS_URL}`);
+        allBots = await res.json();
+        filterBots('all');
+      } catch (err) {
+        showMessage("❌ Error loading bots: " + err.message, "error");
+      }
+    }
+
+    function renderBots(bots) {
+      const container = document.getElementById("botList");
+      container.innerHTML = "";
+
+      if (!bots.length) {
+        container.innerHTML = `<p style="text-align:center;color:#94a3b8;">No bots found.</p>`;
+        return;
+      }
+
+      bots.forEach(bot => {
+        const div = document.createElement("div");
+        div.className = "bot-item";
+        div.innerHTML = `
+          <input type="checkbox" class="botCheck" value="${bot.username}">
+          <label>
+            <strong>${bot.display_name || bot.username}</strong> 
+            <span style="color:#94a3b8;">(${bot.service}) — ${bot.device || "No device"}</span>
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterBots(filterType) {
+      currentFilter = filterType;
+      let filtered = [];
+
+      if (filterType === "all") {
+        filtered = allBots;
+      } else if (filterType === "first10") {
+        filtered = allBots.slice(0, 10);
+      } else if (filterType === "next10") {
+        filtered = allBots.slice(10, 20);
+      }
+
+      filteredBots = filtered;
+      renderBots(filtered);
+
+      setTimeout(() => {
+        document.querySelectorAll("#botList input[type='checkbox']").forEach(cb => {
+          cb.checked = true;
+        });
+      }, 50);
+
+      document.querySelectorAll(".filter-btn").forEach((btn, idx) => {
+        btn.classList.remove("active");
+      });
+      
+      document.querySelectorAll(".filter-btn")[
+        filterType === "all" ? 0 : filterType === "first10" ? 1 : 2
+      ].classList.add("active");
+    }
+
+    document.getElementById("taskForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const selected = Array.from(document.querySelectorAll("#botList input:checked"))
+        .map(cb => cb.value);
+
+      if (selected.length === 0) {
+        showMessage("⚠️ Please select at least one bot.", "error");
+        return;
+      }
+
+      let addDataObj;
+      try {
+        addDataObj = JSON.parse(document.getElementById("addData").value);
+      } catch (e) {
+        showMessage("❌ Invalid JSON in Additional Data field.", "error");
+        return;
+      }
+
+      const tasks = selected.map(username => ({
+        uuid: crypto.randomUUID(),
+        service: document.getElementById("service").value,
+        os: document.getElementById("os").value,
+        data_point: document.getElementById("dataPoint").value,
+        end_point: document.getElementById("endPoint").value,
+        input: document.getElementById("input").value,
+        targets: document.getElementById("targets").value,
+        condition: document.getElementById("condition").value,
+        add_data: addDataObj,
+        ref_id: "ref_" + username,
+        profile: username,
+        status: document.getElementById("status").value,
+        repeat: document.getElementById("repeat").checked,
+        repeat_duration: document.getElementById("repeatDuration").value,
+        last_state_changed_at: document.getElementById("lastStateChanged").value || null,
+        report: document.getElementById("report").checked,
+        retries_count: parseInt(document.getElementById("retriesCount").value) || 0,
+        paused: document.getElementById("paused").checked
+      }));
+
+      try {
+        const res = await fetch(`${TASKS_CREATE_URL}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tasks)
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText);
+        }
+
+        showMessage(`✅ ${tasks.length} tasks created successfully!`, "success");
+        document.getElementById("taskForm").reset();
+        filterBots('all');
+      } catch (err) {
+        showMessage("❌ Error creating task: " + err.message, "error");
+      }
+    });
+
+    async function loadTasks() {
+      const container = document.getElementById("tasksContainer");
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading tasks...</p></div>';
+
+      try {
+        const res = await fetch(`${TASKS_URL}`);
+        const data = await res.json();
+        
+        if (!data.tasks || data.tasks.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:2rem;">No tasks found.</p>';
+          return;
+        }
+
+        allTasks = data.tasks;
+        renderTasksTable(allTasks);
+      } catch (err) {
+        container.innerHTML = `<p style="text-align:center;color:#ff5a5a;padding:2rem;">❌ Error loading tasks: ${err.message}</p>`;
+      }
+    }
+
+    function renderTasksTable(tasks) {
+      const container = document.getElementById("tasksContainer");
+
+      if (!tasks.length) {
+        container.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:2rem;">No tasks found.</p>';
+        return;
+      }
+
+      let tableHTML = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Service</th>
+                <th>Data Point</th>
+                <th>Status</th>
+                <th>Paused</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      tasks.forEach(task => {
+        const statusClass = `status-${task.status}`;
+        const pausedBadge = task.paused ? '<span class="pause-badge">⏸ Paused</span>' : '';
+        const createdDate = new Date(task.created_at).toLocaleString();
+        const updatedDate = new Date(task.updated_at).toLocaleString();
+
+        tableHTML += `
+          <tr>
+            <td><strong>${task.id}</strong></td>
+            <td style="font-size:0.9rem;color:#00ffaa;font-weight:500;">${task.profile || 'N/A'}</td>
+            <td><strong>${task.service}</strong></td>
+            <td>${task.data_point}</td>
+            <td><span class="status-badge ${statusClass}">${task.status.toUpperCase()}</span></td>
+            <td>${pausedBadge}</td>
+            <td style="font-size:0.85rem;color:#94a3b8;">${createdDate}</td>
+            <td style="font-size:0.85rem;color:#94a3b8;">${updatedDate}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML = tableHTML;
+    }
+
+    function filterTasksByUsername() {
+      const searchInput = document.getElementById("usernameSearch").value.toLowerCase();
+      
+      if (!searchInput.trim()) {
+        renderTasksTable(allTasks);
+        return;
+      }
+
+      const filtered = allTasks.filter(task => {
+        const profile = task.profile ? task.profile.toLowerCase() : '';
+        return profile.includes(searchInput);
+      });
+
+      renderTasksTable(filtered);
+    }
+
+    function showMessage(message, type) {
+      const old = document.getElementById("customAlert");
+      if (old) old.remove();
+
+      const alertBox = document.createElement("div");
+      alertBox.id = "customAlert";
+      alertBox.classList.add(type);
+      alertBox.innerHTML = message;
+      document.body.appendChild(alertBox);
+
+      setTimeout(() => {
+        alertBox.style.opacity = "0";
+        setTimeout(() => alertBox.remove(), 600);
+      }, 7000);
+    }
+
+    window.onload = () => {
+      loadChildBots();
+      loadTasks();
+    };
+  </script>
+</body>
+</html>
